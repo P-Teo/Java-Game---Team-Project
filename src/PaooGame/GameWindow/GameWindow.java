@@ -36,6 +36,7 @@ public class GameWindow
         wndWidth    = width;    /*!< Retine latimea ferestrei.*/
         wndHeight   = height;   /*!< Retine inaltimea ferestrei.*/
         wndFrame    = null;     /*!< Fereastra nu este construita.*/
+        System.out.println("Game constructor called. Initializing...");
     }
 
     /*! \fn private void BuildGameWindow()
@@ -44,58 +45,29 @@ public class GameWindow
         inchidere, invalideaza redimensionarea ferestrei, afiseaza fereastra.
 
      */
-    public void BuildGameWindow()
-    {
-            /// Daca fereastra a mai fost construita intr-un apel anterior
-            /// se renunta la apel
-        if(wndFrame != null)
-        {
-            return;
-        }
-            /// Aloca memorie pentru obiectul de tip fereastra si seteaza denumirea
-            /// ce apare in bara de titlu
+    public void BuildGameWindow() {
         wndFrame = new JFrame(wndTitle);
-            /// Seteaza dimensiunile ferestrei in pixeli
         wndFrame.setSize(wndWidth, wndHeight);
-            /// Operatia de inchidere (fereastra sa poata fi inchisa atunci cand
-            /// este apasat butonul x din dreapta sus al ferestrei). Totodata acest
-            /// lucru garanteaza ca nu doar fereastra va fi inchisa ci intregul
-            /// program
         wndFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            /// Avand in vedere ca dimensiunea ferestrei poate fi modificata
-            /// si corespunzator continutul actualizat (aici ma refer la dalele
-            /// randate) va recomand sa constrangeti deocamdata jucatorul
-            /// sa se joace in fereastra stabilitata de voi. Puteti reveni asupra
-            /// urmatorului apel ulterior.
         wndFrame.setResizable(false);
-            /// Recomand ca fereastra sa apara in centrul ecranului. Pentru orice
-            /// alte pozitie se va apela "wndFrame.setLocation(x, y)" etc.
-        wndFrame.setLocationRelativeTo(null);
-            /// Implicit o fereastra cand este creata nu este vizibila motiv pentru
-            /// care trebuie setata aceasta proprietate
-        wndFrame.setVisible(true);
+        wndFrame.setLocationRelativeTo(null); // Centrează fereastra
 
-            /// Creaza obiectul de tip canvas (panza) pe care se poate desena.
+
         canvas = new Canvas();
-            /// In aceeasi maniera trebuiesc setate proprietatile pentru acest obiect
-            /// canvas (panza): dimensiuni preferabile, minime, maxime etc.
-            /// Urmotorul apel de functie seteaza dimensiunea "preferata"/implicita
-            /// a obiectului de tip canvas.
-            /// Functia primeste ca parametru un obiect de tip Dimension ca incapsuleaza
-            /// doua proprietati: latime si inaltime. Cum acest obiect nu exista
-            /// a fost creat unul si dat ca parametru.
         canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
-            /// Avand in vedere ca elementele unei ferestre pot fi scalate atunci cand
-            /// fereastra este redimensionata
         canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
         canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
-            /// Avand in vedere ca obiectul de tip canvas, proaspat creat, nu este automat
-            /// adaugat in fereastra trebuie apelata metoda add a obiectul wndFrame
+        canvas.setFocusable(true); // Asigură-te că poate primi focus
+
+        // Adaugă canvasul înainte de a-l face vizibil
         wndFrame.add(canvas);
-            /// Urmatorul apel de functie are ca scop eventuala redimensionare a ferestrei
-            /// ca tot ce contine sa poate fi afisat complet
-        wndFrame.pack();
+        wndFrame.pack(); // Pachetul pentru a se asigura că frame-ul ia dimensiunile corecte
+        wndFrame.setVisible(true);
+
+
+        canvas.addNotify();
     }
+
 
     /*! \fn public int GetWndWidth()
         \brief Returneaza latimea ferestrei.
@@ -119,4 +91,8 @@ public class GameWindow
     public Canvas GetCanvas() {
         return canvas;
     }
+    public JFrame getFrame() {
+        return wndFrame;
+    }
+
 }
