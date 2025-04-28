@@ -23,7 +23,7 @@ public class StartMenu {
         menuPanel.setOpaque(false);   // Panou transparent
 
         // 1. Adaugă imaginea de fundal redimensionată
-        String imagePath = "paoo-proiect-condurache_papa-master/res/Start_Menu.png";  // Calea fișierului de imagine
+        String imagePath = "res/Start_Menu.png";  // Calea fișierului de imagine
         ImageIcon originalIcon = new ImageIcon(imagePath);
 
         // Redimensionăm imaginea la 1000x600
@@ -86,11 +86,11 @@ public class StartMenu {
         gbc.insets = new Insets(15, 645, 10, 16);  // Margini între butoane
 
         //butoane
-        JButton newGameBtn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "JOC NOU");
-        JButton continueBtn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "CONTINUARE");
-        JButton scoresBtn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "SCORURI");
-        JButton exitBtn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "IEȘIRE");
-        JButton infoBtn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Informatii.png", 50, 50);
+        JButton newGameBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "JOC NOU");
+        JButton continueBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "CONTINUARE");
+        JButton scoresBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "SCORURI");
+        JButton exitBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "IEȘIRE");
+        JButton infoBtn = createImageButton("res/butoane/Informatii.png", 50, 50);
         /// JButton settingsBtn = createImageButton("butoane/Setari.png",50,50);
 
 

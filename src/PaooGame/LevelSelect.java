@@ -19,7 +19,7 @@ public class LevelSelect {
         levelPanel.setOpaque(true); // Asigurăm că panoul este complet opac
 
         // Căutăm imaginea de fundal
-        String imagePath = "paoo-proiect-condurache_papa-master/res/map.png";  // Calea fișierului de imagine
+        String imagePath = "res/map.png";  // Calea fișierului de imagine
         ImageIcon originalIcon = new ImageIcon(imagePath);
 
         // Redimensionăm imaginea
@@ -34,11 +34,11 @@ public class LevelSelect {
         levelPanel.add(backgroundLabel);
 
         // Creăm butoane pentru fiecare nivel
-        JButton level1Btn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "1");
-        JButton level2Btn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "2");
-        JButton level3Btn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "3");
-        JButton level4Btn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "4");
-        JButton level5Btn = createImageButton("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png", 240, 50, "5");
+        JButton level1Btn = createImageButton("res/butoane/Untitled.png", 240, 50, "1");
+        JButton level2Btn = createImageButton("res/butoane/Untitled.png", 240, 50, "2");
+        JButton level3Btn = createImageButton("res/butoane/Untitled.png", 240, 50, "3");
+        JButton level4Btn = createImageButton("res/butoane/Untitled.png", 240, 50, "4");
+        JButton level5Btn = createImageButton("res/butoane/Untitled.png", 240, 50, "5");
 
         // Setăm pozițiile butoanelor
         level1Btn.setBounds(400, 100, 240, 50); // Poziționăm butonul Nivel 1

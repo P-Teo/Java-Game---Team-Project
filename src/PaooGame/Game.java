@@ -310,7 +310,7 @@ public class Game implements Runnable {
     private void loadAssets() {
         try {
             // Folosește calea corectă pentru imaginea ta
-            messageImage = ImageIO.read(new File("paoo-proiect-condurache_papa-master/res/butoane/Untitled.png"));
+            messageImage = ImageIO.read(new File("res/butoane/Untitled.png"));
             System.out.println("Imaginea a fost încărcată cu succes.");
         } catch (IOException e) {
             e.printStackTrace();
