@@ -257,8 +257,13 @@ public class Game implements Runnable {
                 wnd.GetCanvas().setVisible(true);
                 break;
             case LEVEL_SELECT:
+
+               // wnd.GetCanvas().setVisible(false);
                 levelSelect.show();
-                wnd.GetCanvas().setVisible(false);
+
+
+                System.out.println("Canvas displayable after: " + wnd.GetCanvas().isDisplayable());
+                System.out.println("Canvas showing after: " + wnd.GetCanvas().isShowing());
                 break;
             case LEVEL_1:
                 //   levelSelect.hide(); // Hide level selection panel

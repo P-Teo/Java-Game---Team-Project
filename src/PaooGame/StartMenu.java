@@ -147,7 +147,6 @@ public class StartMenu {
         return button;
     }
 
-    //resize imagine
     private JButton createImageButton(String imagePath, int width, int height, String text) {
         ImageIcon originalIcon = new ImageIcon(imagePath);
         Image scaledImage = originalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
