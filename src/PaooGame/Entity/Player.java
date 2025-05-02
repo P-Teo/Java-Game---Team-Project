@@ -16,6 +16,9 @@ public class Player extends Entity{
         speed = 2;
         width = 200;
         height = 120;
+        health = 100;
+        getPlayerImage();
+        loadHeartImages();
         direction = "right";
         frame = 0;
         attackFrame = 0;
@@ -41,7 +44,29 @@ public class Player extends Entity{
             e.printStackTrace();
         }
     }
-    public void update(boolean moveLeft, boolean moveRight, boolean attackKey, int screenWidth) {
+    private void loadHeartImages() {
+        try {
+            fullHeart = ImageIO.read(getClass().getResource("/heart/Full.png"));
+            halfHeart = ImageIO.read(getClass().getResource("/heart/Half.png"));
+            emptyHeart = ImageIO.read(getClass().getResource("/heart/Empty.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public int getHealth() {
+        return health;
+    }
+
+    public void takeDamage(int amount) {
+        health -= amount;
+        if (health < 0) health = 0;
+    }
+
+    public void heal(int amount) {
+        health += amount;
+        if (health > 100) health = 100;
+    }
+    public void update(boolean moveLeft, boolean moveRight,boolean moveUp, boolean moveDown, boolean attackKey, int screenWidth,int screenHeight) {
         isMoving = false;
         isAttacking = false;
         if (moveRight && x + width < screenWidth - 50) {
@@ -51,8 +76,15 @@ public class Player extends Entity{
             direction = "left";
             x -= speed;
         }
-        if(moveRight||moveLeft)
+        if(moveRight||moveLeft || moveUp || moveDown)
             isMoving = true;
+
+        if (moveUp && y > 140) {
+            y -= 3;
+        } else if (moveDown && y + height < screenHeight - 80) {
+            y += 3;
+        }
+
         if (attackKey ) {
             isAttacking = true;
         }
@@ -91,5 +123,29 @@ public class Player extends Entity{
             }
         }
         g.drawImage(image,x,y,width,height,null);
+
+
+
+        //pentru desenare inimi
+        int heartX = 20;
+        int heartY = 20;
+        int heartWidth = 40;
+        int heartHeight = 40;
+        int maxHearts = 3;
+        int hpPerHeart = 100 / maxHearts; // 33 (cu rest)
+
+        // Variabilă temporară pentru a calcula viața rămasă pentru fiecare inimă
+        int remainingHealth =health;
+
+        for (int i = 0; i < maxHearts; i++) {
+            if (remainingHealth >= hpPerHeart) {
+                g.drawImage(fullHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
+            } else if (remainingHealth >= hpPerHeart / 2) {
+                g.drawImage(halfHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
+            } else {
+                g.drawImage(emptyHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
+            }
+            remainingHealth -= hpPerHeart;
+        }
     }
 }
