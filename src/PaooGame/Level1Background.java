@@ -26,6 +26,7 @@ public class Level1Background {
     }
 
     public void draw(Graphics g) {
+
         g.drawImage(image, x, 0, null);
     }
 }

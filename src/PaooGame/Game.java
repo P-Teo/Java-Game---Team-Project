@@ -65,12 +65,13 @@ public class Game implements Runnable {
     private BufferStrategy bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     private boolean moveLeft = false;
     private boolean moveRight = false;
+    private boolean moveUp = false;
+    private boolean moveDown = false;
     private boolean attackKey = false;
     private boolean jumpKey = false;
     private boolean jumpKeyHeld = false;
     private boolean messageDisplayed = false;
     private Image messageImage;
-    private int playerX = 100;
     private Graphics g;          /*!< Referinta catre un context grafic.*/
     private Player player;
     private GameState currentState = GameState.START_MENU; // NEW
@@ -115,6 +116,8 @@ public class Game implements Runnable {
                 } else if (currentState == GameState.LEVEL_1) {
                     if (e.getKeyCode() == KeyEvent.VK_RIGHT) moveRight = true;
                     if (e.getKeyCode() == KeyEvent.VK_LEFT) moveLeft = true;
+                    if (e.getKeyCode() == KeyEvent.VK_UP) moveUp = true;
+                    if (e.getKeyCode() == KeyEvent.VK_DOWN) moveDown = true;
                     if (e.getKeyCode() == KeyEvent.VK_SPACE) attackKey = true;
                 }
             }
@@ -124,6 +127,8 @@ public class Game implements Runnable {
                 if (currentState == GameState.LEVEL_1) {
                     if (e.getKeyCode() == KeyEvent.VK_RIGHT) moveRight = false;
                     if (e.getKeyCode() == KeyEvent.VK_LEFT) moveLeft = false;
+                    if (e.getKeyCode() == KeyEvent.VK_UP) moveUp = false;
+                    if (e.getKeyCode() == KeyEvent.VK_DOWN) moveDown = false;
                     if (e.getKeyCode() == KeyEvent.VK_SPACE) attackKey = false;
                 }
             }
@@ -252,8 +257,13 @@ public class Game implements Runnable {
                 wnd.GetCanvas().setVisible(true);
                 break;
             case LEVEL_SELECT:
+
+               // wnd.GetCanvas().setVisible(false);
                 levelSelect.show();
-                wnd.GetCanvas().setVisible(false);
+
+
+                System.out.println("Canvas displayable after: " + wnd.GetCanvas().isDisplayable());
+                System.out.println("Canvas showing after: " + wnd.GetCanvas().isShowing());
                 break;
             case LEVEL_1:
                 //   levelSelect.hide(); // Hide level selection panel
@@ -299,7 +309,7 @@ public class Game implements Runnable {
             System.out.println("Updating LEVEL_1");
 
             level1Background.update(moveLeft, moveRight,wnd.GetWndWidth());
-            player.update(moveLeft, moveRight,attackKey, wnd.GetWndWidth());
+            player.update(moveLeft, moveRight,moveUp,moveDown,attackKey, wnd.GetWndWidth(),wnd.GetWndHeight());
 
 
 
@@ -356,6 +366,7 @@ public class Game implements Runnable {
             System.out.println("Imaginea mesajului este null.");
         }
     }
+
 
     private void Draw(Graphics g) {
         if (g == null) {
