@@ -1,5 +1,6 @@
 package PaooGame;
 
+import PaooGame.Entity.Enemylvl1;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
 import PaooGame.Tiles.Tile;
@@ -74,10 +75,12 @@ public class Game implements Runnable {
     private Image messageImage;
     private Graphics g;          /*!< Referinta catre un context grafic.*/
     private Player player;
+    private Enemylvl1 enemylvl1;
     private GameState currentState = GameState.START_MENU; // NEW
     private Level1Background level1Background;
     private StartMenu startMenu;
     private LevelSelect levelSelect;
+
 
     public Game(String title, int width, int height) {
         /// Obiectul GameWindow este creat insa fereastra nu este construita
@@ -95,6 +98,7 @@ public class Game implements Runnable {
         System.out.println("Canvas showing after BuildGameWindow: " + wnd.GetCanvas().isShowing());
 
         player = new Player();
+        enemylvl1 = new Enemylvl1();
         level1Background = new Level1Background();
         startMenu = new StartMenu(this);
         levelSelect = new LevelSelect(this);
@@ -309,9 +313,11 @@ public class Game implements Runnable {
             System.out.println("Updating LEVEL_1");
 
             level1Background.update(moveLeft, moveRight,wnd.GetWndWidth());
-            player.update(moveLeft, moveRight,moveUp,moveDown,attackKey, wnd.GetWndWidth(),wnd.GetWndHeight());
-
-
+           if(!messageDisplayed)
+            {
+                player.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
+                enemylvl1.update(player.x, player.y, wnd.GetWndWidth(), wnd.GetWndHeight());
+            }
 
         }
     }
@@ -382,9 +388,11 @@ public class Game implements Runnable {
 
             // Draw player
             player.draw(g);
+            enemylvl1.draw(g);
             if (messageDisplayed) {
                 drawMessage(g);
             }
+
             g.dispose();
         }
     }

@@ -8,12 +8,12 @@ public class Entity {
     public int width, height;
     public int health;
     public BufferedImage fullHeart, halfHeart,emptyHeart;
-    public BufferedImage []leftRunning = new BufferedImage[10];
-    public BufferedImage []rightRunning = new BufferedImage[10];
-    public BufferedImage []leftAttack= new BufferedImage[10];
-    public BufferedImage []rightAttack = new BufferedImage[10];
-    public BufferedImage []leftJump= new BufferedImage[10];
-    public BufferedImage []rightJump = new BufferedImage[10];
+    public BufferedImage []leftRunning = new BufferedImage[12];
+    public BufferedImage []rightRunning = new BufferedImage[12];
+    public BufferedImage []leftAttack= new BufferedImage[12];
+    public BufferedImage []rightAttack = new BufferedImage[12];
+    public BufferedImage []leftJump= new BufferedImage[12];
+    public BufferedImage []rightJump = new BufferedImage[12];
     public BufferedImage idle_left, idle_right;
     public String direction;
     boolean isMoving;

@@ -28,16 +28,16 @@ public class Player extends Entity{
     public void getPlayerImage(){
         try {
             for( int i =0;i<10;i++){
-                leftRunning[i] = ImageIO.read(getClass().getResource("/PlayerSprite/Player_run_left_" + i + ".png"));
-                rightRunning[i] = ImageIO.read(getClass().getResource("/PlayerSprite/Player_run_right_" + i + ".png"));
-                leftAttack[i] = ImageIO.read(getClass().getResource("/PlayerSprite/Player_attack_left_" + i + ".png"));
-                rightAttack[i] = ImageIO.read(getClass().getResource("/PlayerSprite/Player_attack_right_" + i + ".png"));
-                leftJump[i] = ImageIO.read(getClass().getResource("/PlayerSprite/Player_jump_left_" + i + ".png"));
-                rightJump[i] = ImageIO.read(getClass().getResource("/PlayerSprite/Player_jump_right_" + i + ".png"));
+                leftRunning[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_run_left_" + i + ".png"));
+                rightRunning[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_run_right_" + i + ".png"));
+                leftAttack[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_attack_left_" + i + ".png"));
+                rightAttack[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_attack_right_" + i + ".png"));
+                leftJump[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_jump_left_" + i + ".png"));
+                rightJump[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_jump_right_" + i + ".png"));
             }
 
-            idle_right = ImageIO.read(getClass().getResource("/PlayerSprite/Player_idle_right.png"));
-            idle_left = ImageIO.read(getClass().getResource("/PlayerSprite/Player_idle_left.png"));
+            idle_right = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_idle_right.png"));
+            idle_left = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_idle_left.png"));
 
 
         } catch (IOException e) {
