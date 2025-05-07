@@ -11,7 +11,7 @@ public class Level1Background {
 
     public Level1Background() {
         try {
-            image = ImageIO.read(getClass().getResource("/background1.png"));
+            image = ImageIO.read(getClass().getResource("/Background/Backgroundlevel1.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
