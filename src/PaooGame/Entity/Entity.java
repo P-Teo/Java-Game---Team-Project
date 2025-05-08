@@ -7,6 +7,7 @@ public class Entity {
     public int speed;
     public int width, height;
     public int health;
+    public double damage;
     public BufferedImage fullHeart, halfHeart,emptyHeart;
     public BufferedImage []leftRunning = new BufferedImage[12];
     public BufferedImage []rightRunning = new BufferedImage[12];

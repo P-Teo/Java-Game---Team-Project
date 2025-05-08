@@ -1,0 +1,292 @@
+package PaooGame.Levels;
+
+import PaooGame.Entity.Enemylvl1;
+import PaooGame.Entity.Player;
+import PaooGame.Game;
+import PaooGame.GameState;
+import PaooGame.GameWindow.GameWindow;
+import PaooGame.Graphics.Level1Background;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList; // Importă ArrayList și List
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Level1 extends Level {
+    private Player player;
+    private Game game;
+    private Level1Background background;
+    private GameWindow wnd;
+    private Image messageImage;
+    private boolean showMessage;
+    private boolean levelCompleted;
+    private boolean gameOver;
+    List<Enemylvl1> enemies = new ArrayList<>();
+    int maxEnemies = 12;
+    int maxNowEnemies;
+    int currentEnemyIndex = 0;
+    private boolean previousAttackState = false;
+
+    // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
+    private List<Point> princessPath = new ArrayList<>();
+
+    public Level1(Game game,GameWindow wnd) {
+        this.game = game;
+        this.wnd = wnd;
+        maxNowEnemies=maxEnemies;
+        loadAssets();
+        player = new Player();
+        background = new Level1Background();
+        showMessage = true;
+        levelCompleted = false;
+        gameOver = false;
+
+    }
+
+    public void update(boolean left, boolean right, boolean up, boolean down, boolean attack, int wndWidth, int wndHeight) {
+
+
+        background.update(left, right, wndWidth);
+
+        if (!showMessage && !gameOver && !levelCompleted) {
+            player.update(left, right, up, down, attack, wndWidth, wndHeight);
+        }
+
+
+        // Actualizează traseul prințesei
+        int absoluteX = -background.getX() + player.x;
+        princessPath.add(new Point(absoluteX, player.y));
+
+        // Spawn-uieste inamicii în continuare
+        while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
+            Enemylvl1 newEnemy = new Enemylvl1();
+
+            // Poziții random pe Y între 100 și 500
+            int randomY = 100 + (int)(Math.random() * 400);
+            newEnemy.y = randomY;
+
+            // Alternăm spawn-ul: unii din stânga, unii din dreapta
+            if (currentEnemyIndex % 3 == 0) {
+                newEnemy.x = -newEnemy.width - 10; // din stânga
+            } else {
+                newEnemy.x = wndWidth + 10; // din dreapta
+            }
+
+            System.out.println("Inamic nou: X = " + newEnemy.x + ", Y = " + newEnemy.y);
+            enemies.add(newEnemy);
+            currentEnemyIndex++;
+        }
+
+
+
+        // Înainte de eliminarea inamicilor
+        for (Enemylvl1 enemy : enemies) {
+            enemy.update(player.x, player.y, wndWidth, wndHeight);
+
+            // Dacă inamicul e în range și atacă, lovește jucătorul
+            if (enemy.getIsAttacking() && areEntitiesColliding(player, enemy)) {
+                player.takeDamage(enemy.damage);
+            }
+
+            // Dacă jucătorul atacă și e aproape, lovește inamicul
+            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) {
+                enemy.takeDamage(player.damage);
+            }
+        }
+       // System.out.println("Număr inamici după eliminare: " + enemies.size());
+
+        if (!showMessage && !levelCompleted && !gameOver) {
+            if (maxNowEnemies == 0 && enemies.isEmpty()) {
+                System.out.println("Nivel finalizat!");
+                levelCompleted = true;
+            }
+        }
+
+        if (player.getHealth() <= 0) {
+            gameOver = true;
+        }
+        previousAttackState = attack;
+
+
+        // Elimină inamicii uciși
+        enemies.removeIf(e -> {
+            if (e.getHealth() <= 0) {
+                maxNowEnemies--;
+                return true;
+            }
+            return false;
+        });
+    }
+
+
+
+    public void draw(Graphics g) {
+        if (player.getHealth() ==100) {
+            gameOver = false;
+        }
+        Graphics2D g2d = (Graphics2D) g.create();
+        background.draw(g2d);
+        g2d.dispose();
+        //System.out.println("showMessage: " + showMessage);
+        System.out.println("gameOver: " + gameOver);
+        System.out.println("levelCompleted: " + levelCompleted);
+        if (!showMessage && !gameOver && !levelCompleted) {
+
+            player.draw(g);
+            drawMiniMap(g);// Desenarea mini-hărții
+
+        }
+
+        if (showMessage) {
+            drawMessage(g);
+        }
+
+        // Desenează inamicii
+        for (Enemylvl1 enemy : enemies) {
+            if(!showMessage){
+                enemy.draw(g);
+            }
+        }
+
+        // Afișează mesajul de felicitări
+        if (levelCompleted) {
+            drawLevelCompleteMessage(g);
+        }
+
+        // Afișează mesajul de Game Over
+        if (gameOver) {
+            game.setState(GameState.GAME_OVER);
+        }
+
+    }
+
+    private void drawLevelCompleteMessage(Graphics g) {
+
+       // drawWin(g);
+      //  drawNextLevel(g);
+       // game.setState(GameState.LEVEL_SELECT);
+
+    }
+
+    private boolean isMouseClickedInButton(int mouseX, int mouseY, int buttonX, int buttonY, int width, int height) {
+        return mouseX >= buttonX && mouseX <= buttonX + width && mouseY >= buttonY && mouseY <= buttonY + height;
+    }
+
+    private boolean areEntitiesColliding(Player p, Enemylvl1 e) {
+        Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
+        Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
+        return rectP.intersects(rectE);
+    }
+
+    private void drawMiniMap(Graphics g) {
+        // Redimensionează fundalul pentru mini-hartă (o versiune mai mică)
+        int miniMapWidth = 375; // Lățimea mini-hărții
+        int miniMapHeight = (int) (miniMapWidth * ((double) background.getHeight() / background.getWidth())); // Înălțimea mini-hărții
+        int miniMapX = 625; // Poziția pe axa X
+        int miniMapY = 10; // Poziția pe axa Y
+
+        // Desenează fundalul mini-hărții
+        g.drawImage(background.getImage(), miniMapX, miniMapY, miniMapWidth, miniMapHeight, null);
+
+        // Scalează pozițiile din coordonatele mari ale jocului pe mini-harta
+        double scaleX = (double) miniMapWidth / background.getWidth();
+        double scaleY = (double) miniMapHeight / background.getHeight();
+
+        // Desenarea traseului prințesei pe mini-hartă
+        g.setColor(Color.RED);
+        for (int i = 1; i < princessPath.size(); i++) {
+            Point p1 = princessPath.get(i - 1);
+            Point p2 = princessPath.get(i);
+
+            int x1 = (int) (p1.x * scaleX);
+            int y1 = (int) (p1.y * scaleY);
+            int x2 = (int) (p2.x * scaleX);
+            int y2 = (int) (p2.y * scaleY);
+
+            g.drawLine(miniMapX + x1, miniMapY + y1, miniMapX + x2, miniMapY + y2);
+        }
+        // Desenarea poziției curente a prințesei pe mini-hartă
+        int absolutePlayerX = -background.getX() + player.x;
+        int playerMiniMapX = (int) (absolutePlayerX * scaleX);
+        int playerMiniMapY = (int) (player.y * scaleY);
+        g.setColor(Color.GREEN);
+        g.fillRect(miniMapX + playerMiniMapX - 5, miniMapY + playerMiniMapY - 5, 10, 10); // Un pătrat verde pentru jucător
+
+        // Desenează chenarul îngroșat
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setColor(Color.ORANGE); // Culoarea chenarului
+        g2d.setStroke(new BasicStroke(1)); // Grosimea chenarului
+        g2d.drawRect(miniMapX, miniMapY, miniMapWidth, miniMapHeight);
+        g2d.dispose();
+
+
+    }
+
+    private void loadAssets() {
+        try {
+            messageImage = ImageIO.read(new File("res/butoane/Untitled.png"));
+            System.out.println("Imaginea a fost încărcată cu succes.");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Eroare la încărcarea imaginii!");
+        }
+    }
+
+    private void drawMessage(Graphics g) {
+        if (messageImage != null) {
+            int imageWidth = messageImage.getWidth(null);
+            int imageHeight = messageImage.getHeight(null);
+
+            int newWidth = imageWidth / 3;
+            int newHeight = imageHeight / 3;
+
+            int x = (wnd.GetWndWidth() - newWidth) / 2;
+            int y = (wnd.GetWndHeight() - newHeight) / 2;
+
+            Graphics2D g2d = (Graphics2D) g.create();
+
+            g2d.drawImage(messageImage, x, y, newWidth, newHeight, null);
+
+            String message = "Începe lupta";
+            Font font = new Font("Georgia", Font.BOLD, 24);
+            g2d.setFont(font);
+            FontMetrics metrics = g2d.getFontMetrics(font);
+
+            int textX = x + (newWidth - metrics.stringWidth(message)) / 2;
+            int textY = y + (newHeight + metrics.getHeight()) / 2;
+
+            g2d.setColor(new Color(255, 215, 0));
+            g2d.drawString(message, textX, textY);
+
+            g2d.dispose();
+        } else {
+            System.out.println("Imaginea mesajului este null.");
+        }
+    }
+
+    public void mouseClicked(int x, int y) {
+        if (showMessage && messageImage != null) {
+            int imageWidth = messageImage.getWidth(null) / 3;
+            int imageHeight = messageImage.getHeight(null) / 3;
+            int imgX = (wnd.GetWndWidth() - imageWidth) / 2;
+            int imgY = (wnd.GetWndHeight() - imageHeight) / 2;
+
+            if (x >= imgX && x <= imgX + imageWidth && y >= imgY && y <= imgY + imageHeight) {
+                hideMessage();
+            }
+        }else {
+            System.out.println("mouse click.");
+        }
+
+    }
+
+    public void hideMessage() {
+        showMessage = false;
+    }
+}

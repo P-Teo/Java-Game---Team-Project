@@ -1,9 +1,8 @@
 package PaooGame;
 
-import PaooGame.Entity.Enemylvl1;
+import PaooGame.Levels.Level1;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
-import PaooGame.Tiles.Tile;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,20 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.IOException;
-
-import PaooGame.Entity.Player;
-
-import javax.imageio.ImageIO;
-
-enum GameState { // NEW
-    START_MENU,
-    LEVEL_SELECT,
-    LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5,
-    PAUSE,
-    GAME_OVER
-}
 
 /*! \class Game
     \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
@@ -71,14 +56,11 @@ public class Game implements Runnable {
     private boolean attackKey = false;
     private boolean jumpKey = false;
     private boolean jumpKeyHeld = false;
-    private boolean messageDisplayed = false;
-    private Image messageImage;
     private Graphics g;          /*!< Referinta catre un context grafic.*/
-    private Player player;
-    private Enemylvl1 enemylvl1;
     private GameState currentState = GameState.START_MENU; // NEW
-    private Level1Background level1Background;
+    private Level1 level1;
     private StartMenu startMenu;
+    private GameOver gameOver;
     private LevelSelect levelSelect;
 
 
@@ -97,11 +79,10 @@ public class Game implements Runnable {
         System.out.println("Canvas displayable after BuildGameWindow: " + wnd.GetCanvas().isDisplayable());
         System.out.println("Canvas showing after BuildGameWindow: " + wnd.GetCanvas().isShowing());
 
-        player = new Player();
-        enemylvl1 = new Enemylvl1();
-        level1Background = new Level1Background();
         startMenu = new StartMenu(this);
+        gameOver = new GameOver(this);
         levelSelect = new LevelSelect(this);
+        level1 = new Level1(this,wnd);
 
         currentState = GameState.START_MENU;
         startMenu.show();
@@ -144,7 +125,7 @@ public class Game implements Runnable {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (currentState == GameState.LEVEL_1) {
-                    messageDisplayed = false; // Ascunde mesajul când este apăsat mouse-ul
+                    level1.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
                 }
             }
         });
@@ -153,12 +134,13 @@ public class Game implements Runnable {
     }
 
 
+
     private void InitGame() {
         System.out.println("Game Initialized");
         /// Este construita fereastra grafica.
 
         /// Se incarca toate elementele grafice
-        loadAssets();
+
         setupKeyListener();
         Assets.Init();
 
@@ -253,6 +235,8 @@ public class Game implements Runnable {
 
     public void setState(GameState newState) {
         System.out.println("Changing state from " + currentState + " to " + newState);
+        GameState oldState;
+        oldState=currentState;
         currentState = newState;
 
         switch (currentState) {
@@ -272,6 +256,7 @@ public class Game implements Runnable {
             case LEVEL_1:
                 //   levelSelect.hide(); // Hide level selection panel
                 // Ensure the canvas is displayed properly
+
                 wnd.GetCanvas().setFocusable(true);
                 wnd.GetCanvas().requestFocusInWindow();
                 wnd.getFrame().getContentPane().removeAll();
@@ -280,7 +265,6 @@ public class Game implements Runnable {
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
                 // Confirm the visibility and display state after everything
-                messageDisplayed = true;
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
                 break;
@@ -299,7 +283,7 @@ public class Game implements Runnable {
             case PAUSE:
                 break;
             case GAME_OVER:
-                // Nu desenezi nimic în stările respective (de exemplu, un meniu)
+                 gameOver.show();
                 break;
             default:
                 throw new IllegalStateException("Stare necunoscută: " + currentState);
@@ -310,68 +294,13 @@ public class Game implements Runnable {
 
     private void Update() {
         if (currentState == GameState.LEVEL_1) {
-            System.out.println("Updating LEVEL_1");
-
-            level1Background.update(moveLeft, moveRight,wnd.GetWndWidth());
-           if(!messageDisplayed)
-            {
-                player.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
-                enemylvl1.update(player.x, player.y, wnd.GetWndWidth(), wnd.GetWndHeight());
-            }
-
+            level1.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
         }
     }
 
 
-    private void loadAssets() {
-        try {
-            // Folosește calea corectă pentru imaginea ta
-            messageImage = ImageIO.read(new File("res/butoane/Untitled.png"));
-            System.out.println("Imaginea a fost încărcată cu succes.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private void drawMessage(Graphics g) {
-        if (messageImage != null) {
-            // Dimensiunile originale ale imaginii
-            int imageWidth = messageImage.getWidth(null);
-            int imageHeight = messageImage.getHeight(null);
 
-            // Setează noile dimensiuni dorite (micsorate)
-            int newWidth = imageWidth / 3; // De exemplu, reducere la jumătate
-            int newHeight = imageHeight / 3; // De exemplu, reducere la jumătate
 
-            // Calculăm poziția pentru a centra imaginea
-            int x = (wnd.GetWndWidth() - newWidth) / 2; // Centrarea pe axa X
-            int y = (wnd.GetWndHeight() - newHeight) / 2; // Centrarea pe axa Y
-
-            // Creează un context grafic 2D pentru scalare
-            Graphics2D g2d = (Graphics2D) g.create();
-
-            // Aplică redimensionarea (scalare) și desenează imaginea
-            g2d.drawImage(messageImage, x, y, newWidth, newHeight, null);
-
-            // Textul mesajului
-            String message = "Începe lupta";
-            Font font = new Font("Georgia", Font.BOLD, 24);  // Alege o fontă potrivită
-            g2d.setFont(font);
-            FontMetrics metrics = g2d.getFontMetrics(font);
-
-            // Calculăm poziția pentru a centra mesajul pe imagine
-            int textX = x + (newWidth - metrics.stringWidth(message)) / 2; // Centrarea textului pe axa X
-            int textY = y + (newHeight + metrics.getHeight()) / 2; // Centrarea textului pe axa Y
-
-            // Setăm culoarea fontului
-            g2d.setColor(new Color(255, 215, 0));
-            g2d.drawString(message, textX, textY);
-
-            // Eliberează contextul grafic
-            g2d.dispose();
-        } else {
-            System.out.println("Imaginea mesajului este null.");
-        }
-    }
 
 
     private void Draw(Graphics g) {
@@ -383,18 +312,14 @@ public class Game implements Runnable {
         // Clear the screen
 
         if (currentState == GameState.LEVEL_1) {
-            System.out.println("Draw LEVEL_1");
-            level1Background.draw(g);
-
-            // Draw player
-            player.draw(g);
-            enemylvl1.draw(g);
-            if (messageDisplayed) {
-                drawMessage(g);
-            }
-
+            level1.draw(g);
             g.dispose();
         }
+        if (currentState == GameState.GAME_OVER) {
+            gameOver.show();
+        }
+            g.dispose();
+
     }
 
     public GameState getState() {

@@ -1,4 +1,4 @@
-package PaooGame;
+package PaooGame.Graphics;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -29,4 +29,23 @@ public class Level1Background {
 
         g.drawImage(image, x, 0, null);
     }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+    public int getX() {
+        return x;
+    }
+
+
+    // Returnează lățimea imaginii de fundal
+    public int getWidth() {
+        return image.getWidth();
+    }
+
+    // Returnează înălțimea imaginii de fundal
+    public int getHeight() {
+        return image.getHeight();
+    }
+
 }

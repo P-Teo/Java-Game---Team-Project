@@ -17,6 +17,7 @@ public class Player extends Entity{
         width = 200;
         height = 120;
         health = 100;
+        damage = 3.5;
         getPlayerImage();
         loadHeartImages();
         direction = "right";
@@ -57,7 +58,7 @@ public class Player extends Entity{
         return health;
     }
 
-    public void takeDamage(int amount) {
+    public void takeDamage(double amount) {
         health -= amount;
         if (health < 0) health = 0;
     }
@@ -65,6 +66,10 @@ public class Player extends Entity{
     public void heal(int amount) {
         health += amount;
         if (health > 100) health = 100;
+    }
+    public boolean getIsAttacking()
+    {
+        return isAttacking;
     }
     public void update(boolean moveLeft, boolean moveRight,boolean moveUp, boolean moveDown, boolean attackKey, int screenWidth,int screenHeight) {
         isMoving = false;
