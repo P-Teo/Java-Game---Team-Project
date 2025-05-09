@@ -7,6 +7,22 @@ import java.io.IOException;
 
 
 public class Player extends Entity{
+
+    private static BufferedImage[] leftRunning = new BufferedImage[10];
+    private static BufferedImage[] rightRunning = new BufferedImage[10];
+    private static BufferedImage[] leftAttack = new BufferedImage[10];
+    private static BufferedImage[] rightAttack = new BufferedImage[10];
+    private static BufferedImage[] leftJump = new BufferedImage[10];
+    private static BufferedImage[] rightJump = new BufferedImage[10];
+    private static BufferedImage idle_right;
+    private static BufferedImage idle_left;
+
+    private static BufferedImage fullHeart;
+    private static BufferedImage halfHeart;
+    private static BufferedImage emptyHeart;
+
+    private static boolean imagesLoaded = false;
+
     boolean isAttacking = false;
 
 
@@ -18,13 +34,15 @@ public class Player extends Entity{
         height = 120;
         health = 100;
         damage = 3.5;
-        getPlayerImage();
-        loadHeartImages();
         direction = "right";
         frame = 0;
         attackFrame = 0;
         isMoving = false;
-        getPlayerImage();
+        if (!imagesLoaded) {
+            getPlayerImage();
+            loadHeartImages();
+            imagesLoaded = true;
+        }
     }
     public void getPlayerImage(){
         try {

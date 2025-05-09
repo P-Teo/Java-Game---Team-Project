@@ -31,7 +31,6 @@ public class LevelSelect {
         backgroundLabel.setBounds(0, 0, 1000, 600);  // Setăm poziția și dimensiunile imaginii
 
 
-
         // Creăm butoane pentru fiecare nivel
         JButton acasaBtn = createImageButton("res/butoane/Acasa.png", 70, 70);
         JButton scorBtn = createImageButton("res/butoane/Scor.png", 60, 60);
@@ -68,10 +67,28 @@ public class LevelSelect {
         // Adăugăm imaginea ca fundal
         levelPanel.add(backgroundLabel);
 
+
+        int[] star= game.getStar();
         acasaBtn.addActionListener(e -> {
             game.setState(GameState.START_MENU); // Start joc nou
 
         });
+
+        scorBtn.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, String.valueOf(game.getTotalScore())); // Start joc nou
+
+        });
+
+        steleBtn.addActionListener(e -> {
+            int sum = 0;
+            for (int i = 1; i <= 6; i++) {
+                sum += star[i];
+            }
+            String mesaj = "<html><body style='font-size:20px;'>" + sum + "   ⭐</body></html>";
+            JOptionPane.showMessageDialog(null, mesaj);
+
+        });
+
 
         // Setăm acțiunile pentru butoane
         level1Btn.addActionListener(e -> {
@@ -79,7 +96,10 @@ public class LevelSelect {
                 game.setState(GameState.LEVEL_1);
             }
             else {
-                JOptionPane.showMessageDialog(null, "Nivel 1 câștigat!");
+                String nrStar = "⭐".repeat(star[1]);
+                String mesaj = "<html><body style='font-size:20px;'>Nivel 1 câștigat!<br>" + nrStar + "</body></html>";
+                JOptionPane.showMessageDialog(null, mesaj);
+
             }
         });
 
@@ -89,7 +109,9 @@ public class LevelSelect {
             }
             else
             if(game.nrLevel>2){
-                JOptionPane.showMessageDialog(null, "Nivel 2 câștigat!");
+                String nrStar = "⭐".repeat(star[2]);
+                String mesaj = "<html><body style='font-size:20px;'>Nivel 2 câștigat!<br>" + nrStar + "</body></html>";
+                JOptionPane.showMessageDialog(null, mesaj);
             }
             else
             {
@@ -103,7 +125,9 @@ public class LevelSelect {
             }
             else
             if(game.nrLevel>3){
-                JOptionPane.showMessageDialog(null, "Nivel 3 câștigat!");
+                String nrStar = "⭐".repeat(star[3]);
+                String mesaj = "<html><body style='font-size:20px;'>Nivel 3 câștigat!<br>" + nrStar + "</body></html>";
+                JOptionPane.showMessageDialog(null, mesaj);
             }
             else
             {
@@ -113,11 +137,13 @@ public class LevelSelect {
 
         level4Btn.addActionListener(e -> {
             if(game.nrLevel==4) {
-                game.setState(GameState.LEVEL_1);
+                game.setState(GameState.LEVEL_4);
             }
             else
             if(game.nrLevel>4){
-                JOptionPane.showMessageDialog(null, "Nivel 4 câștigat!");
+                String nrStar = "⭐".repeat(star[4]);
+                String mesaj = "<html><body style='font-size:20px;'>Nivel 4 câștigat!<br>" + nrStar + "</body></html>";
+                JOptionPane.showMessageDialog(null, mesaj);
             }
             else
             {
@@ -127,7 +153,7 @@ public class LevelSelect {
 
         level5Btn.addActionListener(e -> {
             if(game.nrLevel==5) {
-                game.setState(GameState.LEVEL_1);
+                game.setState(GameState.LEVEL_5);
             }
             else
             {
@@ -189,6 +215,8 @@ public class LevelSelect {
         // Ascunde canvas-ul
       //  game.getWnd().GetCanvas().setVisible(false);
 
+
+
         frame.getContentPane().add(levelPanel);// Folosește setContentPane în loc de add
 
         // Forțează actualizarea
@@ -207,8 +235,9 @@ public class LevelSelect {
         levelPanel.setVisible(false);
 
     }
-    public JPanel getLevelPanel() {
+    public JPanel getPanel() {
         return levelPanel;
     }
+
 
 }

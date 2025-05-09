@@ -5,14 +5,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Level2Background {
+public class Level4Background {
     private BufferedImage image;
     private int x = 0;
 
 
-    public Level2Background() {
+    public Level4Background() {
         try {
-            image = ImageIO.read(getClass().getResource("/Background/Backgroundlevel2.png"));
+            image = ImageIO.read(getClass().getResource("/Background/Backgroundlevel4.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }

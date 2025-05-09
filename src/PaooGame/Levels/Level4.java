@@ -5,7 +5,7 @@ import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
-import PaooGame.Graphics.Level1Background;
+import PaooGame.Graphics.Level4Background;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.ArrayList; // Importă ArrayList și List
 
 
-public class Level1 extends Level {
+public class Level4 extends Level {
     private Player player;
     private Game game;
-    private Level1Background background;
+    private Level4Background background;
     private GameWindow wnd;
     private Image messageImage;
     private boolean showMessage;
@@ -41,18 +41,18 @@ public class Level1 extends Level {
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
 
-    public Level1(Game game,GameWindow wnd) {
+    public Level4(Game game,GameWindow wnd) {
         this.game = game;
         this.wnd = wnd;
         maxNowEnemies=maxEnemies;
         loadAssets();
+        score=0;
+        star=0;
         player = new Player();
-        background = new Level1Background();
+        background = new Level4Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
-        score=0;
-        star=0;
         startTime = System.currentTimeMillis();
 
 
@@ -61,7 +61,6 @@ public class Level1 extends Level {
     public void update(boolean left, boolean right, boolean up, boolean down, boolean attack, int wndWidth, int wndHeight) {
 
         background.update(left, right, wndWidth);
-
         if (!showMessage && !gameOver && !levelCompleted) {
             player.update(left, right, up, down, attack, wndWidth, wndHeight);
         }
@@ -88,8 +87,6 @@ public class Level1 extends Level {
             System.out.println("Inamic nou: X = " + newEnemy.x + ", Y = " + newEnemy.y);
             enemies.add(newEnemy);
             currentEnemyIndex++;
-
-
         }
 
         // Înainte de eliminarea inamicilor
@@ -106,7 +103,7 @@ public class Level1 extends Level {
                 enemy.takeDamage(player.damage);
             }
         }
-       // System.out.println("Număr inamici după eliminare: " + enemies.size());
+        // System.out.println("Număr inamici după eliminare: " + enemies.size());
 
         if (!showMessage && !levelCompleted && !gameOver) {
             if (maxNowEnemies == 0 && enemies.isEmpty()) {
@@ -125,7 +122,6 @@ public class Level1 extends Level {
             gameOver = true;
         }
         previousAttackState = attack;
-
 
         // Elimină inamicii uciși
         enemies.removeIf(e -> {
@@ -151,11 +147,16 @@ public class Level1 extends Level {
             gameOver = false;
         }
         Graphics2D g2d = (Graphics2D) g.create();
-        background.draw(g2d);
+        if (background != null && background.getImage() != null) {
+            background.draw(g2d);
+        } else {
+            System.out.println("Background sau imaginea background-ului nu este încărcată corect.");
+        }
+        //background.draw(g2d);
         g2d.dispose();
         //System.out.println("showMessage: " + showMessage);
-      ///  System.out.println("gameOver: " + gameOver);
-      ///  System.out.println("levelCompleted: " + levelCompleted);
+        ///System.out.println("gameOver: " + gameOver);
+        ///System.out.println("levelCompleted: " + levelCompleted);
         if (!showMessage && !gameOver && !levelCompleted) {
 
             player.draw(g);
@@ -163,6 +164,7 @@ public class Level1 extends Level {
             drawMiniMap(g);// Desenarea mini-hărții
 
         }
+
         if (showMessage) {
             drawMessage(g);
         }
@@ -176,7 +178,7 @@ public class Level1 extends Level {
 
         // Afișează mesajul de felicitări
         if (levelCompleted) {
-            game.nrLevel=2;
+            game.nrLevel=5;
             drawLevelCompleteMessage(g);
         }
 
@@ -189,7 +191,7 @@ public class Level1 extends Level {
 
     public void reset() {
         player = new Player();
-        background = new Level1Background();
+        background = new Level4Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -202,6 +204,7 @@ public class Level1 extends Level {
         princessPath.clear();
     }
 
+
     private void drawScore(Graphics g) {
         String scoreText = "Scor: " + score;
         Font font = new Font("Arial", Font.BOLD, 24);
@@ -213,6 +216,7 @@ public class Level1 extends Level {
 
         g.drawString(scoreText, x, y);
     }
+
 
     private void drawLevelCompleteMessage(Graphics g) {
         showLevelCompleteMessage = true;
@@ -249,8 +253,7 @@ public class Level1 extends Level {
             g2d.drawString(message, textX, textY);
 
             // Textul scorului final
-            String nrStar = "*".repeat(this.getStar());
-            String scoreText = "Scor final: " + score +"   "+nrStar ;
+            String scoreText = "Scor final: " + score;
             Font scoreFont = new Font("Georgia", Font.PLAIN, 24);
             g2d.setFont(scoreFont);
             FontMetrics scoreMetrics = g2d.getFontMetrics(scoreFont);
@@ -260,6 +263,7 @@ public class Level1 extends Level {
 
             g2d.setColor(Color.WHITE);
             g2d.drawString(scoreText, scoreTextX, scoreTextY);
+
 
 
             // Desenează triunghiul (buton de continuare) în interiorul imaginii
@@ -283,7 +287,6 @@ public class Level1 extends Level {
             g2d.dispose();
         }
     }
-
 
     private boolean isMouseClickedInButton(int mouseX, int mouseY, int buttonX, int buttonY, int width, int height) {
         return mouseX >= buttonX && mouseX <= buttonX + width && mouseY >= buttonY && mouseY <= buttonY + height;
@@ -405,11 +408,12 @@ public class Level1 extends Level {
         }
     }
 
-    public int getScore(){
-        return score;
-    }
+
     public void hideMessage() {
         showMessage = false;
+    }
+    public int getScore(){
+        return score;
     }
     public int getStar()
     {
