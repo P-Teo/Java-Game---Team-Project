@@ -1,6 +1,7 @@
 package PaooGame.Levels;
 
-import PaooGame.Entity.Enemylvl1;
+
+import PaooGame.Entity.Enemylvl2;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
@@ -24,7 +25,7 @@ public class Level2 extends Level {
     private boolean showMessage;
     private boolean levelCompleted;
     private boolean gameOver;
-    List<Enemylvl1> enemies = new ArrayList<>();
+    List<Enemylvl2> enemies = new ArrayList<>();
     int maxEnemies = 12;
     int maxNowEnemies;
     int currentEnemyIndex = 0;
@@ -71,7 +72,7 @@ public class Level2 extends Level {
 
         // Spawn-uieste inamicii în continuare
         while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
-            Enemylvl1 newEnemy = new Enemylvl1();
+            Enemylvl2 newEnemy = new Enemylvl2();
 
             // Poziții random pe Y între 100 și 500
             int randomY = 100 + (int)(Math.random() * 400);
@@ -90,7 +91,7 @@ public class Level2 extends Level {
         }
 
         // Înainte de eliminarea inamicilor
-        for (Enemylvl1 enemy : enemies) {
+        for (Enemylvl2 enemy : enemies) {
             enemy.update(player.x, player.y, wndWidth, wndHeight);
 
             // Dacă inamicul e în range și atacă, lovește jucătorul
@@ -99,8 +100,13 @@ public class Level2 extends Level {
             }
 
             // Dacă jucătorul atacă și e aproape, lovește inamicul
-            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) {
+            // Dacă jucătorul atacă și e aproape, lovește inamicul
+            if (attack&&!previousAttackState  && areEntitiesColliding(player, enemy)) {
                 enemy.takeDamage(player.damage);
+                previousAttackState = true;
+            }
+            else if (!attack) {
+                previousAttackState = false; // Permite atacul din nou dacă jucătorul nu mai atacă
             }
         }
         // System.out.println("Număr inamici după eliminare: " + enemies.size());
@@ -125,7 +131,7 @@ public class Level2 extends Level {
 
         // Elimină inamicii uciși
         enemies.removeIf(e -> {
-            if (e.getHealth() <= 0) {
+            if (e.isDead) {
                 maxNowEnemies--;
                 return true;
             }
@@ -170,7 +176,7 @@ public class Level2 extends Level {
         }
 
         // Desenează inamicii
-        for (Enemylvl1 enemy : enemies) {
+        for (Enemylvl2 enemy : enemies) {
             if(!showMessage){
                 enemy.draw(g);
             }
@@ -292,7 +298,7 @@ public class Level2 extends Level {
         return mouseX >= buttonX && mouseX <= buttonX + width && mouseY >= buttonY && mouseY <= buttonY + height;
     }
 
-    private boolean areEntitiesColliding(Player p, Enemylvl1 e) {
+    private boolean areEntitiesColliding(Player p, Enemylvl2 e) {
         Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
         Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
         return rectP.intersects(rectE);

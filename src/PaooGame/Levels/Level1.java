@@ -102,8 +102,12 @@ public class Level1 extends Level {
             }
 
             // Dacă jucătorul atacă și e aproape, lovește inamicul
-            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) {
+            if (attack&&!previousAttackState  && areEntitiesColliding(player, enemy)) {
                 enemy.takeDamage(player.damage);
+                previousAttackState = true;
+            }
+            else if (!attack) {
+                previousAttackState = false; // Permite atacul din nou dacă jucătorul nu mai atacă
             }
         }
        // System.out.println("Număr inamici după eliminare: " + enemies.size());
@@ -121,7 +125,7 @@ public class Level1 extends Level {
             }
         }
 
-        if (player.getHealth() <= 0) {
+        if (player.isDead ) {
             gameOver = true;
         }
         previousAttackState = attack;
@@ -129,7 +133,7 @@ public class Level1 extends Level {
 
         // Elimină inamicii uciși
         enemies.removeIf(e -> {
-            if (e.getHealth() <= 0) {
+            if (e.isDead) {
                 maxNowEnemies--;
                 return true;
             }

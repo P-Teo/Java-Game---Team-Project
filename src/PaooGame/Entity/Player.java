@@ -12,8 +12,8 @@ public class Player extends Entity{
     private static BufferedImage[] rightRunning = new BufferedImage[10];
     private static BufferedImage[] leftAttack = new BufferedImage[10];
     private static BufferedImage[] rightAttack = new BufferedImage[10];
-    private static BufferedImage[] leftJump = new BufferedImage[10];
-    private static BufferedImage[] rightJump = new BufferedImage[10];
+    private static BufferedImage[] leftDie = new BufferedImage[10];
+    private static BufferedImage[] rightDie = new BufferedImage[10];
     private static BufferedImage idle_right;
     private static BufferedImage idle_left;
 
@@ -24,7 +24,8 @@ public class Player extends Entity{
     private static boolean imagesLoaded = false;
 
     boolean isAttacking = false;
-
+    private int deathFrameDelay = 0;
+    private final int maxDeathFrameDelay = 3;
 
     public Player(){
         x = 200;
@@ -33,11 +34,13 @@ public class Player extends Entity{
         width = 200;
         height = 120;
         health = 100;
-        damage = 3.5;
+        damage = 6;
         direction = "right";
         frame = 0;
+        dieFrame = 0;
         attackFrame = 0;
         isMoving = false;
+        isDying = false;
         if (!imagesLoaded) {
             getPlayerImage();
             loadHeartImages();
@@ -51,8 +54,8 @@ public class Player extends Entity{
                 rightRunning[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_run_right_" + i + ".png"));
                 leftAttack[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_attack_left_" + i + ".png"));
                 rightAttack[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_attack_right_" + i + ".png"));
-                leftJump[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_jump_left_" + i + ".png"));
-                rightJump[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_jump_right_" + i + ".png"));
+                leftDie[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_die_left_" + i + ".png"));
+                rightDie[i] = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_die_right_" + i + ".png"));
             }
 
             idle_right = ImageIO.read(getClass().getResource("/Characters/PlayerSprite/Player_idle_right.png"));
@@ -78,7 +81,11 @@ public class Player extends Entity{
 
     public void takeDamage(double amount) {
         health -= amount;
-        if (health < 0) health = 0;
+        if (health <= 0&& !isDying) {
+            health = 0;
+            isDying = true;
+            dieFrame = 0;
+        }
     }
 
     public void heal(int amount) {
@@ -90,8 +97,11 @@ public class Player extends Entity{
         return isAttacking;
     }
     public void update(boolean moveLeft, boolean moveRight,boolean moveUp, boolean moveDown, boolean attackKey, int screenWidth,int screenHeight) {
+
         isMoving = false;
         isAttacking = false;
+        isDead = false;
+
         if (moveRight && x + width < screenWidth - 50) {
             direction = "right";
             x += speed;
@@ -111,6 +121,18 @@ public class Player extends Entity{
         if (attackKey ) {
             isAttacking = true;
         }
+        if(isDying){
+            deathFrameDelay++;
+            if (deathFrameDelay >= maxDeathFrameDelay) {
+                dieFrame++;
+                deathFrameDelay = 0;
+            }
+            if (dieFrame >= 10) {
+                dieFrame = 9;
+                isDying = false;
+                isDead = true;
+            }
+        }
         if (isAttacking) {
             attackFrame++;
             if (attackFrame >= 10) {
@@ -122,10 +144,18 @@ public class Player extends Entity{
                 frame = 0;
             }
         }
+
     }
     public void draw(Graphics g) {
         BufferedImage image = null;
-        if (isAttacking) {
+        if(isDying){
+            if(direction.equals("right")){
+                image = rightDie[dieFrame];
+            } else if(direction.equals("left")){
+                image =leftDie[dieFrame];
+            }
+        }
+        else if (isAttacking) {
             if (direction.equals("right")) {
                 image = rightAttack[attackFrame];
             } else if (direction.equals("left")) {

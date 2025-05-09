@@ -1,6 +1,7 @@
 package PaooGame.Levels;
 
-import PaooGame.Entity.Enemylvl1;
+
+import PaooGame.Entity.Enemylvl4;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
@@ -24,7 +25,7 @@ public class Level4 extends Level {
     private boolean showMessage;
     private boolean levelCompleted;
     private boolean gameOver;
-    List<Enemylvl1> enemies = new ArrayList<>();
+    List<Enemylvl4> enemies = new ArrayList<>();
     int maxEnemies = 12;
     int maxNowEnemies;
     int currentEnemyIndex = 0;
@@ -71,7 +72,7 @@ public class Level4 extends Level {
 
         // Spawn-uieste inamicii în continuare
         while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
-            Enemylvl1 newEnemy = new Enemylvl1();
+            Enemylvl4 newEnemy = new Enemylvl4();
 
             // Poziții random pe Y între 100 și 500
             int randomY = 100 + (int)(Math.random() * 400);
@@ -90,7 +91,7 @@ public class Level4 extends Level {
         }
 
         // Înainte de eliminarea inamicilor
-        for (Enemylvl1 enemy : enemies) {
+        for (Enemylvl4 enemy : enemies) {
             enemy.update(player.x, player.y, wndWidth, wndHeight);
 
             // Dacă inamicul e în range și atacă, lovește jucătorul
@@ -170,7 +171,7 @@ public class Level4 extends Level {
         }
 
         // Desenează inamicii
-        for (Enemylvl1 enemy : enemies) {
+        for (Enemylvl4 enemy : enemies) {
             if(!showMessage){
                 enemy.draw(g);
             }
@@ -292,7 +293,7 @@ public class Level4 extends Level {
         return mouseX >= buttonX && mouseX <= buttonX + width && mouseY >= buttonY && mouseY <= buttonY + height;
     }
 
-    private boolean areEntitiesColliding(Player p, Enemylvl1 e) {
+    private boolean areEntitiesColliding(Player p, Enemylvl4 e) {
         Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
         Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
         return rectP.intersects(rectE);

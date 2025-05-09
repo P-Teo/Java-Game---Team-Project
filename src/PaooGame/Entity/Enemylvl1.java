@@ -13,6 +13,8 @@ public class Enemylvl1  extends Entity{
     private static BufferedImage[] sharedRightRunning = new BufferedImage[12];
     private static BufferedImage[] sharedLeftAttack = new BufferedImage[12];
     private static BufferedImage[] sharedRightAttack = new BufferedImage[12];
+    private static BufferedImage[] sharedLeftDie = new BufferedImage[15];
+    private static BufferedImage[] sharedRightDie = new BufferedImage[15];
     private static BufferedImage sharedIdleRight;
     private static BufferedImage sharedIdleLeft;
     private static boolean imagesLoaded = false;
@@ -32,7 +34,9 @@ public class Enemylvl1  extends Entity{
         frame = 0;
         attackFrame = 0;
         isMoving = false;
-
+        isDying = false;
+        isDead = false;
+        dieFrame = 0;
         if (!imagesLoaded) {
             loadSharedImages(); // încarcă o singură dată imaginile statice
         }
@@ -42,6 +46,8 @@ public class Enemylvl1  extends Entity{
         rightRunning = sharedRightRunning;
         leftAttack = sharedLeftAttack;
         rightAttack = sharedRightAttack;
+        rightDie = sharedRightDie;
+        leftDie = sharedLeftDie;
         idle_right = sharedIdleRight;
         idle_left = sharedIdleLeft;
     }
@@ -54,6 +60,9 @@ public class Enemylvl1  extends Entity{
                 sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_run_right_" + i + ".png"));
                 sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_attack_left_" + i + ".png"));
                 sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_attack_right_" + i + ".png"));
+                sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_die_left_" + i + ".png"));
+                sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_die_right_" + i + ".png"));
+
             }
             sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_idle_right.png"));
             sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_idle_left.png"));
@@ -72,7 +81,11 @@ public class Enemylvl1  extends Entity{
 
     public void takeDamage(double amount) {
         health -= amount;
-        if (health < 0) health = 0;
+        System.out.println("damage!!" + health);
+        if (health <= 0 && !isDying) {
+            health = 0;
+            isDying =true;
+        }
     }
     public boolean getIsAttacking()
     {
@@ -80,6 +93,20 @@ public class Enemylvl1  extends Entity{
     }
 
     public void update(int xPlayer, int yPlayer, int screenWidth, int screenHeight) {
+        if(isDead){
+            return;
+        }
+        if(isDying){
+            System.out.println("is dying!!!");
+            dieFrame++;
+            if (dieFrame >= 15) {
+                dieFrame = 14;
+                isDying = false;
+                isDead = true;
+            }
+            return;
+        }
+
         int distanceX = this.x - xPlayer;
         int distanceY = this.y - yPlayer;
 
@@ -116,11 +143,19 @@ public class Enemylvl1  extends Entity{
                 frame = 0;
             }
         }
+
     }
 
     public void draw(Graphics g) {
         BufferedImage image = null;
-        if (isAttacking) {
+         if(isDying){
+            if(direction.equals("right")){
+                image = rightDie[dieFrame];
+            } else if(direction.equals("left")){
+                image =leftDie[dieFrame];
+            }
+        }
+        else if (isAttacking) {
             if (direction.equals("right")) {
                 image = rightAttack[attackFrame];
             } else if (direction.equals("left")) {
