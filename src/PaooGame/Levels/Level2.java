@@ -5,7 +5,7 @@ import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
-import PaooGame.Graphics.Level1Background;
+import PaooGame.Graphics.Level2Background;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.ArrayList; // Importă ArrayList și List
 
 
-public class Level1 extends Level {
+public class Level2 extends Level {
     private Player player;
     private Game game;
-    private Level1Background background;
+    private Level2Background background;
     private GameWindow wnd;
     private Image messageImage;
     private boolean showMessage;
@@ -35,13 +35,13 @@ public class Level1 extends Level {
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
 
-    public Level1(Game game,GameWindow wnd) {
+    public Level2(Game game,GameWindow wnd) {
         this.game = game;
         this.wnd = wnd;
         maxNowEnemies=maxEnemies;
         loadAssets();
         player = new Player();
-        background = new Level1Background();
+        background = new Level2Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -98,7 +98,7 @@ public class Level1 extends Level {
                 enemy.takeDamage(player.damage);
             }
         }
-       // System.out.println("Număr inamici după eliminare: " + enemies.size());
+        // System.out.println("Număr inamici după eliminare: " + enemies.size());
 
         if (!showMessage && !levelCompleted && !gameOver) {
             if (maxNowEnemies == 0 && enemies.isEmpty()) {
@@ -133,8 +133,8 @@ public class Level1 extends Level {
         background.draw(g2d);
         g2d.dispose();
         //System.out.println("showMessage: " + showMessage);
-      ///  System.out.println("gameOver: " + gameOver);
-      ///  System.out.println("levelCompleted: " + levelCompleted);
+        System.out.println("gameOver: " + gameOver);
+        System.out.println("levelCompleted: " + levelCompleted);
         if (!showMessage && !gameOver && !levelCompleted) {
 
             player.draw(g);
@@ -182,9 +182,9 @@ public class Level1 extends Level {
 
     private void drawLevelCompleteMessage(Graphics g) {
 
-       // drawWin(g);
-      //  drawNextLevel(g);
-        game.setState(GameState.LEVEL_SELECT);
+        // drawWin(g);
+        //  drawNextLevel(g);
+         game.setState(GameState.LEVEL_SELECT);
 
     }
 

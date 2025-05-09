@@ -3,6 +3,7 @@ package PaooGame;
 import PaooGame.Levels.Level1;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
+import PaooGame.Levels.Level2;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,39 +12,7 @@ import java.awt.image.BufferStrategy;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-/*! \class Game
-    \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
 
-                ------------
-                |           |
-                |     ------------
-    60 times/s  |     |  Update  |  -->{ actualizeaza variabile, stari, pozitii ale elementelor grafice etc.
-        =       |     ------------
-     16.7 ms    |           |
-                |     ------------
-                |     |   Draw   |  -->{ deseneaza totul pe ecran
-                |     ------------
-                |           |
-                -------------
-    Implementeaza interfata Runnable:
-
-        public interface Runnable {
-            public void run();
-        }
-
-    Interfata este utilizata pentru a crea un nou fir de executie avand ca argument clasa Game.
-    Clasa Game trebuie sa aiba definita metoda "public void run()", metoda ce va fi apelata
-    in noul thread(fir de executie). Mai multe explicatii veti primi la curs.
-
-    In mod obisnuit aceasta clasa trebuie sa contina urmatoarele:
-        - public Game();            //constructor
-        - private void init();      //metoda privata de initializare
-        - private void update();    //metoda privata de actualizare a elementelor jocului
-        - private void draw();      //metoda privata de desenare a tablei de joc
-        - public run();             //metoda publica ce va fi apelata de noul fir de executie
-        - public synchronized void start(); //metoda publica de pornire a jocului
-        - public synchronized void stop()   //metoda publica de oprire a jocului
- */
 public class Game implements Runnable {
     private GameWindow wnd;        /*!< Fereastra in care se va desena tabla jocului*/
     private boolean runState;   /*!< Flag ce starea firului de executie.*/
@@ -59,6 +28,8 @@ public class Game implements Runnable {
     private Graphics g;          /*!< Referinta catre un context grafic.*/
     private GameState currentState = GameState.START_MENU; // NEW
     private Level1 level1;
+    private Level2 level2;
+    public int nrLevel=0;
     private StartMenu startMenu;
     private GameOver gameOver;
     private LevelSelect levelSelect;
@@ -82,8 +53,9 @@ public class Game implements Runnable {
         startMenu = new StartMenu(this);
         gameOver = new GameOver(this);
         levelSelect = new LevelSelect(this);
+        //level2 = new Level2(this,wnd);
         level1 = new Level1(this,wnd);
-
+        nrLevel=1;
         currentState = GameState.START_MENU;
         startMenu.show();
         wnd.GetCanvas().setVisible(true);
@@ -137,10 +109,6 @@ public class Game implements Runnable {
 
     private void InitGame() {
         System.out.println("Game Initialized");
-        /// Este construita fereastra grafica.
-
-        /// Se incarca toate elementele grafice
-
         setupKeyListener();
         Assets.Init();
 
@@ -150,9 +118,7 @@ public class Game implements Runnable {
     public void run() {
         InitGame();
         System.out.println("Entering run method.");
-
         Canvas canvas = wnd.GetCanvas();
-
         int attempts = 0;
         while (!canvas.isDisplayable() ) {
             try {
@@ -186,7 +152,6 @@ public class Game implements Runnable {
             Update();
             Draw(bs.getDrawGraphics());
             bs.show();
-
             try {
                 Thread.sleep(16); // ~60 FPS
             } catch (InterruptedException e) {
@@ -245,18 +210,13 @@ public class Game implements Runnable {
                 wnd.GetCanvas().setVisible(true);
                 break;
             case LEVEL_SELECT:
-
-               // wnd.GetCanvas().setVisible(false);
                 levelSelect.show();
-
-
                 System.out.println("Canvas displayable after: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after: " + wnd.GetCanvas().isShowing());
                 break;
             case LEVEL_1:
                 //   levelSelect.hide(); // Hide level selection panel
                 // Ensure the canvas is displayed properly
-
                 wnd.GetCanvas().setFocusable(true);
                 wnd.GetCanvas().requestFocusInWindow();
                 wnd.getFrame().getContentPane().removeAll();
@@ -269,7 +229,10 @@ public class Game implements Runnable {
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
                 break;
             case LEVEL_2:
-                // drawLevel(g, 2);
+
+                // Confirm the visibility and display state after everything
+                System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
+                System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
                 break;
             case LEVEL_3:
                 //drawLevel(g, 3);
@@ -283,7 +246,10 @@ public class Game implements Runnable {
             case PAUSE:
                 break;
             case GAME_OVER:
-                 gameOver.show();
+                gameOver.show();
+                nrLevel=1;
+                level1 = new Level1(this,wnd);
+               // level2 = new Level2(this,wnd);
                 break;
             default:
                 throw new IllegalStateException("Stare necunoscută: " + currentState);
@@ -313,11 +279,11 @@ public class Game implements Runnable {
 
         if (currentState == GameState.LEVEL_1) {
             level1.draw(g);
-            g.dispose();
         }
-        if (currentState == GameState.GAME_OVER) {
-            gameOver.show();
-        }
+       /* if (currentState == GameState.LEVEL_2) {
+            level2.draw(g);
+        }*/
+
             g.dispose();
 
     }

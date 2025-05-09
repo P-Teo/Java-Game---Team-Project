@@ -75,23 +75,64 @@ public class LevelSelect {
 
         // Setăm acțiunile pentru butoane
         level1Btn.addActionListener(e -> {
-            game.setState(GameState.LEVEL_1);  // Poți începe efectiv nivelul 1 aici
+            if(game.nrLevel==1) {
+                game.setState(GameState.LEVEL_1);
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Nivel 1 câștigat!");
+            }
         });
 
         level2Btn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Nivel 2 blocat momentan!");
+            if(game.nrLevel==2) {
+                game.setState(GameState.LEVEL_2);
+            }
+            else
+            if(game.nrLevel>2){
+                JOptionPane.showMessageDialog(null, "Nivel 2 câștigat!");
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Nivel 2 blocat momentan!");
+            }
         });
 
         level3Btn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Nivel 3 blocat momentan!");
+            if(game.nrLevel==3) {
+                game.setState(GameState.LEVEL_3);
+            }
+            else
+            if(game.nrLevel>3){
+                JOptionPane.showMessageDialog(null, "Nivel 3 câștigat!");
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Nivel 3 blocat momentan!");
+            }
         });
 
         level4Btn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Nivel 4 blocat momentan!");
+            if(game.nrLevel==4) {
+                game.setState(GameState.LEVEL_1);
+            }
+            else
+            if(game.nrLevel>4){
+                JOptionPane.showMessageDialog(null, "Nivel 4 câștigat!");
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Nivel 4 blocat momentan!");
+            }
         });
 
         level5Btn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Nivel 5 blocat momentan!");
+            if(game.nrLevel==5) {
+                game.setState(GameState.LEVEL_1);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null, "Nivel 5 blocat momentan!");
+            }
         });
 
         // Recalculăm și redimensionăm panoul după adăugarea butoanelor
