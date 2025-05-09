@@ -325,6 +325,13 @@ public class Game implements Runnable {
                 wnd.getFrame().revalidate();
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
+
+                bs = null;
+                BufferStrategy newBs = wnd.GetCanvas().getBufferStrategy();
+                if (newBs == null) {
+                    wnd.GetCanvas().createBufferStrategy(2);
+                }
+
                 // Confirm the visibility and display state after everything
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
