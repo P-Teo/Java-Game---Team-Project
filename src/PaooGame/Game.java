@@ -60,7 +60,7 @@ public class Game implements Runnable {
         level2 = new Level2(this,wnd);
         level3 = new Level3(this,wnd);
         level4 = new Level4(this,wnd);
-       // level5 = new Level5(this,wnd);
+        level5 = new Level5(this,wnd);
         nrLevel=1;
         totalScore=0;
         currentState = GameState.START_MENU;
@@ -117,7 +117,7 @@ public class Game implements Runnable {
                     level4.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
                 }
                 if (currentState == GameState.LEVEL_5 ) {
-                    //level5.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
+                    level5.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
                 }
             }
         });
@@ -298,8 +298,8 @@ public class Game implements Runnable {
                         star[4]=level4.getStar();
                         break;
                     case LEVEL_5:
-                        // totalScore += level5.getScore(); // Adaugă scorul obținut la nivelul 5
-                        // star[5]=level5.getStar();
+                        totalScore += level5.getScore(); // Adaugă scorul obținut la nivelul 5
+                        star[5]=level5.getStar();
                         break;
                     default:
                         // Dacă starea nu este una validă, nu adăugăm nimic
@@ -374,6 +374,16 @@ public class Game implements Runnable {
                 break;
             case LEVEL_5:
                 // drawLevel(g, 5);
+                wnd.GetCanvas().setFocusable(true);
+                wnd.GetCanvas().requestFocusInWindow();
+                wnd.getFrame().getContentPane().removeAll();
+                wnd.getFrame().getContentPane().add(wnd.GetCanvas());
+                wnd.getFrame().revalidate();
+                wnd.getFrame().repaint();
+                wnd.GetCanvas().setVisible(true);
+                // Confirm the visibility and display state after everything
+                System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
+                System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
                 break;
             case PAUSE:
                 break;
@@ -385,7 +395,7 @@ public class Game implements Runnable {
                 level2.reset();
                 level3.reset();
                 level4.reset();
-                //level5.reset();
+                level5.reset();
                 break;
             default:
                 throw new IllegalStateException("Stare necunoscută: " + currentState);
@@ -407,9 +417,9 @@ public class Game implements Runnable {
         if (currentState == GameState.LEVEL_4) {
             level4.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
         }
-       /* if (currentState == GameState.LEVEL_5) {
+        if (currentState == GameState.LEVEL_5) {
             level5.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
-        }*/
+        }
     }
 
 
@@ -442,7 +452,7 @@ public class Game implements Runnable {
             g.dispose();
         }
         if (currentState == GameState.LEVEL_5) {
-           // level5.draw(g);
+            level5.draw(g);
             g.dispose();
         }
 
@@ -480,7 +490,7 @@ public class Game implements Runnable {
         level2.reset();
         level3.reset();
         level4.reset();
-        // level5.reset();
+        level5.reset();
     }
 
 }

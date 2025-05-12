@@ -55,7 +55,7 @@ public class Enemylvl4  extends Entity{
     private void loadSharedImages() {
         //System.out.println("111111111");
         try {
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < 12; i++) {
                 sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_run_left_" + i + ".png"));
                 sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_run_right_" + i + ".png"));
                 sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_attack_left_" + i + ".png"));
@@ -99,8 +99,8 @@ public class Enemylvl4  extends Entity{
         if(isDying){
             System.out.println("is dying!!!");
             dieFrame++;
-            if (dieFrame >= 15) {
-                dieFrame = 14;
+            if (dieFrame >= 12) {
+                dieFrame = 11;
                 isDying = false;
                 isDead = true;
             }

@@ -5,10 +5,9 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 
 
-public class Enemylvl3  extends Entity{
+public class Enemylvl5_first  extends Entity{
     private static BufferedImage[] sharedLeftRunning = new BufferedImage[12];
     private static BufferedImage[] sharedRightRunning = new BufferedImage[12];
     private static BufferedImage[] sharedLeftAttack = new BufferedImage[12];
@@ -22,7 +21,7 @@ public class Enemylvl3  extends Entity{
     boolean isAttacking = false;
 
 
-    public Enemylvl3() {
+    public Enemylvl5_first() {
         x = 700;
         y = 300;
         speed = 6;
@@ -56,16 +55,16 @@ public class Enemylvl3  extends Entity{
         //System.out.println("111111111");
         try {
             for (int i = 0; i < 10; i++) {
-                sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_run_left_" + i + ".png"));
-                sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_run_right_" + i + ".png"));
-                sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_attack_left_" + i + ".png"));
-                sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_attack_right_" + i + ".png"));
-                sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_die_left_" + i + ".png"));
-                sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_die_right_" + i + ".png"));
+                sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_run_left_" + i + ".png"));
+                sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_run_right_" + i + ".png"));
+                sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_attack_left_" + i + ".png"));
+                sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_attack_right_" + i + ".png"));
+                sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_die_left_" + i + ".png"));
+                sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_die_right_" + i + ".png"));
 
             }
-            sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_idle_right.png"));
-            sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_idle_left.png"));
+            sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_idle_right.png"));
+            sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_idle_left.png"));
 
             imagesLoaded = true;
             System.out.println("Imaginile Enemy1 au fost încărcate o singură dată.");
@@ -106,7 +105,7 @@ public class Enemylvl3  extends Entity{
             }
             return;
         }
-    // calculam distanta dintre centrul axelor celor 2 caractere din cauza diferentei de marime
+        // calculam distanta dintre centrul axelor celor 2 caractere din cauza diferentei de marime
 
         int centerXEnemy = this.x + this.width / 2;
         int centerYEnemy = this.y + this.height / 2;

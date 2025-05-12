@@ -119,19 +119,21 @@ public class Level4 extends Level {
             }
         }
 
-        if (player.getHealth() <= 0) {
+        if (player.isDead ) {
             gameOver = true;
         }
         previousAttackState = attack;
 
+
         // Elimină inamicii uciși
         enemies.removeIf(e -> {
-            if (e.getHealth() <= 0) {
+            if (e.isDead) {
                 maxNowEnemies--;
                 return true;
             }
             return false;
         });
+
 
         //actualizeaza scorul
         if (absoluteX > maxPlayerX) {
