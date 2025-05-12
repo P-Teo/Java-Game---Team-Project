@@ -196,12 +196,14 @@ public class Level2 extends Level {
     }
 
     public void reset() {
+        startTime = System.currentTimeMillis();
         player = new Player();
         background = new Level2Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
         enemies.clear();
+        maxPlayerX = 0;
         maxNowEnemies = maxEnemies;
         currentEnemyIndex = 0;
         score=0;
@@ -259,7 +261,8 @@ public class Level2 extends Level {
             g2d.drawString(message, textX, textY);
 
             // Textul scorului final
-            String scoreText = "Scor final: " + score;
+            String nrStar = "*".repeat(this.getStar());
+            String scoreText = "Scor final: " + score +"   "+nrStar ;
             Font scoreFont = new Font("Georgia", Font.PLAIN, 24);
             g2d.setFont(scoreFont);
             FontMetrics scoreMetrics = g2d.getFontMetrics(scoreFont);

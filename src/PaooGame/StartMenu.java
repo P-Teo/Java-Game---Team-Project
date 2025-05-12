@@ -111,12 +111,26 @@ public class StartMenu {
 
         // Funcționalitate
         newGameBtn.addActionListener(e -> {
-            game.setState(GameState.LEVEL_SELECT); // Start joc nou
+            game.nrLevel = 1;
+            game.setTotalScore (0);
+            int[] stars = game.getStar();
+            for (int i = 0; i < stars.length; i++) {
+                stars[i] = 0;
+            }
+            game.reset();
+            game.setState(GameState.LEVEL_SELECT);
 
         });
 
         continueBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Funcția 'Continuare' nu e implementată încă.");
+            if(game.getTotalScore()==0)
+            {
+                JOptionPane.showMessageDialog(null, "Nu ai joc început. Începe joc nou!");
+            }
+            else
+            {
+                game.setState(GameState.LEVEL_SELECT);
+            }
         });
 
         scoresBtn.addActionListener(e -> {

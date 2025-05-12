@@ -192,11 +192,13 @@ public class Level1 extends Level {
     }
 
     public void reset() {
+        startTime = System.currentTimeMillis();
         player = new Player();
         background = new Level1Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
+        maxPlayerX = 0;
         enemies.clear();
         maxNowEnemies = maxEnemies;
         currentEnemyIndex = 0;

@@ -66,6 +66,7 @@ public class Game implements Runnable {
         currentState = GameState.START_MENU;
         startMenu.show();
         wnd.GetCanvas().setVisible(true);
+        waitForCanvasReady(wnd.GetCanvas());
     }
 
 
@@ -138,7 +139,6 @@ public class Game implements Runnable {
         InitGame();
         System.out.println("Entering run method.");
         Canvas canvas = wnd.GetCanvas();
-        waitForCanvasReady(canvas);
 
         if (!canvas.isDisplayable()) {
             System.out.println("Canvas still not displayable after waiting!");
@@ -469,6 +469,18 @@ public class Game implements Runnable {
     }
     public int[] getStar(){
         return star;
+    }
+
+    public void setTotalScore(int x){
+        totalScore=x;
+    }
+    public void reset()
+    {
+        level1.reset();
+        level2.reset();
+        level3.reset();
+        level4.reset();
+        // level5.reset();
     }
 
 }

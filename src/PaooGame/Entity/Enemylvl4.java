@@ -9,10 +9,10 @@ import java.net.URL;
 
 
 public class Enemylvl4  extends Entity{
-    private static BufferedImage[] sharedLeftRunning = new BufferedImage[12];
-    private static BufferedImage[] sharedRightRunning = new BufferedImage[12];
-    private static BufferedImage[] sharedLeftAttack = new BufferedImage[12];
-    private static BufferedImage[] sharedRightAttack = new BufferedImage[12];
+    private static BufferedImage[] sharedLeftRunning = new BufferedImage[15];
+    private static BufferedImage[] sharedRightRunning = new BufferedImage[15];
+    private static BufferedImage[] sharedLeftAttack = new BufferedImage[15];
+    private static BufferedImage[] sharedRightAttack = new BufferedImage[15];
     private static BufferedImage[] sharedLeftDie = new BufferedImage[15];
     private static BufferedImage[] sharedRightDie = new BufferedImage[15];
     private static BufferedImage sharedIdleRight;
@@ -55,7 +55,7 @@ public class Enemylvl4  extends Entity{
     private void loadSharedImages() {
         //System.out.println("111111111");
         try {
-            for (int i = 0; i < 12; i++) {
+            for (int i = 0; i < 15; i++) {
                 sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_run_left_" + i + ".png"));
                 sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_run_right_" + i + ".png"));
                 sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_attack_left_" + i + ".png"));
