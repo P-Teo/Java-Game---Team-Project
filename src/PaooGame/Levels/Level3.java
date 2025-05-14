@@ -2,6 +2,7 @@ package PaooGame.Levels;
 
 
 import PaooGame.Castle.Castle1;
+import PaooGame.Entity.Enemylvl1;
 import PaooGame.Entity.Enemylvl3;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
@@ -29,7 +30,7 @@ public class Level3 extends Level {
     int maxEnemies = 12;
     int maxNowEnemies;
     List<Enemylvl3> enemies = new ArrayList<>();
-    List<Enemylvl3> enemyPool = new ArrayList<>(maxEnemies);
+   // List<Enemylvl3> enemyPool = new ArrayList<>(maxEnemies);
     int currentEnemyIndex = 0;
     private boolean previousAttackState = false;
     private Rectangle continueButtonBounds = new Rectangle(650, 350, 50, 50); // Poziția și dimensiunea butonului de continuare
@@ -63,10 +64,10 @@ public class Level3 extends Level {
         startTime = System.currentTimeMillis();
         castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle1.png");
         castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle2.png");
-
+        /*
         for(int i = 0;i< maxEnemies;i++){
             enemyPool.add(new Enemylvl3());
-        }
+        }*/
 
     }
 
@@ -87,7 +88,7 @@ public class Level3 extends Level {
 
         // Spawn-uieste inamicii în continuare
         while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
-            Enemylvl3 newEnemy = enemyPool.remove(0);
+            Enemylvl3 newEnemy = new Enemylvl3();//enemyPool.remove(0);
 
             // Poziții random pe Y între 100 și 500
             int randomY = 100+ (int)(Math.random() * 400);
@@ -224,19 +225,25 @@ public class Level3 extends Level {
 
     public void reset() {
         startTime = System.currentTimeMillis();
-        // player = new Player();
-        //background = new Level1Background();
+        player = new Player();
+        background = new Level3Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
-        // maxPlayerX = 0;
-        //enemies.clear();
-        //maxNowEnemies = maxEnemies;
-        //currentEnemyIndex = 0;
+        maxPlayerX = 0;
+        enemies.clear();
+        /*
+        enemyPool.clear();  // Clear existing enemies in pool
+        for (int i = 0; i < maxEnemies; i++) {
+            enemyPool.add(new Enemylvl3());  // Add new enemies to reach maxEnemies
+        }*/
+
+        maxNowEnemies = maxEnemies;
+        currentEnemyIndex = 0;
         score=0;
         star=0;
         previousAttackState = false;
-        //princessPath.clear();
+        princessPath.clear();
     }
 
 

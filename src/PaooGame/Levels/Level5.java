@@ -1,13 +1,11 @@
 package PaooGame.Levels;
 
 
-import PaooGame.Entity.Enemylvl3;
-import PaooGame.Entity.Enemylvl5_first;
+import PaooGame.Entity.Enemylvl4_last;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
-import PaooGame.Graphics.Level4Background;
 import PaooGame.Graphics.Level5Background;
 
 import javax.imageio.ImageIO;
@@ -27,9 +25,9 @@ public class Level5 extends Level {
     private boolean showMessage;
     private boolean levelCompleted;
     private boolean gameOver;
-    List<Enemylvl5_first> enemies = new ArrayList<>();
+    List<Enemylvl4_last> enemies = new ArrayList<>();
     int maxEnemies = 2;
-    List<Enemylvl5_first> enemyPool = new ArrayList<>(maxEnemies);
+    //List<Enemylvl4_last> enemyPool = new ArrayList<>(maxEnemies);
     int maxNowEnemies;
     int currentEnemyIndex = 0;
     private boolean previousAttackState = false;
@@ -61,9 +59,9 @@ public class Level5 extends Level {
         levelCompleted = false;
         gameOver = false;
         startTime = System.currentTimeMillis();
-        for(int i = 0; i <maxEnemies;i++){
-            enemyPool.add(new Enemylvl5_first());
-        }
+        /*for(int i = 0; i <maxEnemies;i++){
+            enemyPool.add(new Enemylvl4_last());
+        }*/
 
 
     }
@@ -89,13 +87,13 @@ public class Level5 extends Level {
         // Spawn inamici doar când playerul ajunge la mijloc și nu au fost spawnați deja
         if (!enemiesSpawned && absoluteX >= middleOfScreen) {
             // Inamic din stânga
-            Enemylvl5_first leftEnemy = enemyPool.remove(0);
+            Enemylvl4_last leftEnemy = new Enemylvl4_last();//enemyPool.remove(0);
             leftEnemy.x = -leftEnemy.width - 10;
             leftEnemy.y = 100 + (int)(Math.random() * 400);
             enemies.add(leftEnemy);
 
             // Inamic din dreapta
-            Enemylvl5_first rightEnemy = enemyPool.remove(0);
+            Enemylvl4_last rightEnemy = new Enemylvl4_last();//enemyPool.remove(0);
             rightEnemy.x = wndWidth + 10;
             rightEnemy.y = 100 + (int)(Math.random() * 400);
             enemies.add(rightEnemy);
@@ -106,7 +104,7 @@ public class Level5 extends Level {
 
 
         // Înainte de eliminarea inamicilor
-        for (Enemylvl5_first enemy : enemies) {
+        for (Enemylvl4_last enemy : enemies) {
             enemy.update(player.x, player.y, wndWidth, wndHeight);
 
             // Dacă inamicul e în range și atacă, lovește jucătorul
@@ -197,7 +195,7 @@ public class Level5 extends Level {
         }
 
         // Desenează inamicii
-        for (Enemylvl5_first enemy : enemies) {
+        for (Enemylvl4_last enemy : enemies) {
             if(!showMessage){
                 enemy.draw(g);
             }
@@ -218,19 +216,25 @@ public class Level5 extends Level {
 
     public void reset() {
         startTime = System.currentTimeMillis();
-        // player = new Player();
-        //background = new Level1Background();
+         player = new Player();
+        background = new Level5Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
-        // maxPlayerX = 0;
-        //enemies.clear();
-        //maxNowEnemies = maxEnemies;
-        //currentEnemyIndex = 0;
+        maxPlayerX = 0;
+        /*enemies.clear();
+
+        enemyPool.clear();  // Clear existing enemies in pool
+        for (int i = 0; i < maxEnemies; i++) {
+            enemyPool.add(new Enemylvl4_last());  // Add new enemies to reach maxEnemies
+        }*/
+
+        maxNowEnemies = maxEnemies;
+        currentEnemyIndex = 0;
         score=0;
         star=0;
         previousAttackState = false;
-        //princessPath.clear();
+        princessPath.clear();
     }
 
 
@@ -322,7 +326,7 @@ public class Level5 extends Level {
         return mouseX >= buttonX && mouseX <= buttonX + width && mouseY >= buttonY && mouseY <= buttonY + height;
     }
 
-    private boolean areEntitiesColliding(Player p, Enemylvl5_first e) {
+    private boolean areEntitiesColliding(Player p, Enemylvl4_last e) {
         Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
         Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
         return rectP.intersects(rectE);

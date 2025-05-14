@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 
-public class Enemylvl5_first  extends Entity{
+public class Enemylvl4_last extends Entity{
     private static BufferedImage[] sharedLeftRunning = new BufferedImage[12];
     private static BufferedImage[] sharedRightRunning = new BufferedImage[12];
     private static BufferedImage[] sharedLeftAttack = new BufferedImage[12];
@@ -21,7 +21,7 @@ public class Enemylvl5_first  extends Entity{
     boolean isAttacking = false;
 
 
-    public Enemylvl5_first() {
+    public Enemylvl4_last() {
         x = 700;
         y = 300;
         speed = 6;
@@ -55,16 +55,16 @@ public class Enemylvl5_first  extends Entity{
         //System.out.println("111111111");
         try {
             for (int i = 0; i < 10; i++) {
-                sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_run_left_" + i + ".png"));
-                sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_run_right_" + i + ".png"));
-                sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_attack_left_" + i + ".png"));
-                sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_attack_right_" + i + ".png"));
-                sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_die_left_" + i + ".png"));
-                sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_die_right_" + i + ".png"));
+                sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Knight/Knight_run_left_" + i + ".png"));
+                sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Knight/Knight_run_right_" + i + ".png"));
+                sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Knight/Knight_attack_left_" + i + ".png"));
+                sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Knight/Knight_attack_right_" + i + ".png"));
+                sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Knight/Knight_die_left_" + i + ".png"));
+                sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Knight/Knight_die_right_" + i + ".png"));
 
             }
-            sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_idle_right.png"));
-            sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy5/Knight/Knight_idle_left.png"));
+            sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy4/Knight/Knight_idle_right.png"));
+            sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy4/Knight/Knight_idle_left.png"));
 
             imagesLoaded = true;
             System.out.println("Imaginile Enemy1 au fost încărcate o singură dată.");

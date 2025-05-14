@@ -56,19 +56,19 @@ public class Enemylvl4  extends Entity{
         //System.out.println("111111111");
         try {
             for (int i = 0; i < 12; i++) {
-                sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_run_left_" + i + ".png"));
-                sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_run_right_" + i + ".png"));
-                sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_attack_left_" + i + ".png"));
-                sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_attack_right_" + i + ".png"));
+                sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Skeletons/Enemy4_run_left_" + i + ".png"));
+                sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Skeletons/Enemy4_run_right_" + i + ".png"));
+                sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Skeletons/Enemy4_attack_left_" + i + ".png"));
+                sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Skeletons/Enemy4_attack_right_" + i + ".png"));
 
             }
             for (int i = 0; i < 15; i++) {
-                sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_die_left_" + i + ".png"));
-                sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Enemy4_die_right_" + i + ".png"));
+                sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Skeletons/Enemy4_die_left_" + i + ".png"));
+                sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy4/Skeletons/Enemy4_die_right_" + i + ".png"));
 
             }
-            sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_idle_right.png"));
-            sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy3/Enemy3_idle_left.png"));
+            sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy4/Skeletons/Enemy4_idle_right.png"));
+            sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy4/Skeletons/Enemy4_idle_left.png"));
 
             imagesLoaded = true;
             System.out.println("Imaginile Enemy1 au fost încărcate o singură dată.");
@@ -186,4 +186,3 @@ public class Enemylvl4  extends Entity{
 
     }
 }
-
