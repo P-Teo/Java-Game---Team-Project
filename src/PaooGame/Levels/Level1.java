@@ -42,6 +42,10 @@ public class Level1 extends Level {
     private final Castle1 castle2;
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
+    private boolean isPaused = false;
+    private Rectangle pauseButtonBounds = new Rectangle(930, 8, 50, 50);
+    private Rectangle resumeButtonBounds = new Rectangle(780, 530, 200, 50); // Poziția și dimensiunea butonului de reluare
+
 
     public Level1(Game game,GameWindow wnd) {
         this.game = game;
@@ -68,6 +72,10 @@ public class Level1 extends Level {
 
     public void update(boolean left, boolean right, boolean up, boolean down, boolean attack, int wndWidth, int wndHeight) {
 
+        if (isPaused) {
+            return; // Dacă jocul este în pauză, nu actualizăm nimic
+        }
+
         background.update(left, right, wndWidth);
 
         if (!showMessage && !gameOver && !levelCompleted) {
@@ -79,7 +87,7 @@ public class Level1 extends Level {
         princessPath.add(new Point(absoluteX, player.y));
 
         // Spawn-uieste inamicii în continuare
-        while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
+        while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 320) {
             Enemylvl1 newEnemy = enemyPool.remove(0);
 
             // Poziții random pe Y între 100 și 500
@@ -164,10 +172,21 @@ public class Level1 extends Level {
         }
         Graphics2D g2d = (Graphics2D) g.create();
         background.draw(g2d);
+        if(!showMessage && !gameOver && !levelCompleted)
+        {
+            if (!isPaused) {
+            drawPauseButton(g2d);
+            }
+            if (isPaused) {
+            drawPauseMenu(g2d);
+            }
+        }
         g2d.dispose();
         //System.out.println("showMessage: " + showMessage);
       ///  System.out.println("gameOver: " + gameOver);
       ///  System.out.println("levelCompleted: " + levelCompleted);
+
+
         if (!showMessage && !gameOver && !levelCompleted) {
             castle1.draw(g, background.getX());
             castle2.draw(g, background.getX());
@@ -314,7 +333,7 @@ public class Level1 extends Level {
         // Redimensionează fundalul pentru mini-hartă (o versiune mai mică)
         int miniMapWidth = 375; // Lățimea mini-hărții
         int miniMapHeight = (int) (miniMapWidth * ((double) background.getHeight() / background.getWidth())); // Înălțimea mini-hărții
-        int miniMapX = 625; // Poziția pe axa X
+        int miniMapX = 530; // Poziția pe axa X
         int miniMapY = 10; // Poziția pe axa Y
 
         // Desenează fundalul mini-hărții
@@ -397,6 +416,13 @@ public class Level1 extends Level {
     }
 
     public void mouseClicked(int x, int y) {
+
+        if (isMouseClickedInButton(x, y, pauseButtonBounds.x, pauseButtonBounds.y, pauseButtonBounds.width, pauseButtonBounds.height)) {
+            isPaused = !isPaused;
+        }
+        if (isPaused && isMouseClickedInButton(x, y, resumeButtonBounds.x, resumeButtonBounds.y, resumeButtonBounds.width, resumeButtonBounds.height)) {
+            isPaused = false; // Reluăm jocul
+        }
         if (showMessage && messageImage != null) {
             int imageWidth = messageImage.getWidth(null) / 3;
             int imageHeight = messageImage.getHeight(null) / 3;
@@ -438,5 +464,59 @@ public class Level1 extends Level {
             star=0;
         return star;
     }
+    private void drawPauseButton(Graphics g) {
+        g.setColor(Color.BLUE);
+        g.fillRect(pauseButtonBounds.x, pauseButtonBounds.y, pauseButtonBounds.width, pauseButtonBounds.height);
+
+        // Desenează chenarul negru
+        g.setColor(Color.BLACK);
+        g.drawRect(pauseButtonBounds.x, pauseButtonBounds.y, pauseButtonBounds.width - 1, pauseButtonBounds.height - 1);
+
+        // Desenează simbolul pauză: două bare verticale
+        g.setColor(Color.ORANGE);
+        Graphics2D g2 = (Graphics2D) g;
+        int barWidth = 8;
+        int barHeight = 30;
+        int spaceBetween = 10;
+
+        int bar1X = pauseButtonBounds.x + (pauseButtonBounds.width - 2 * barWidth - spaceBetween) / 2;
+        int barY = pauseButtonBounds.y + (pauseButtonBounds.height - barHeight) / 2;
+        int bar2X = bar1X + barWidth + spaceBetween;
+
+        g2.fillRect(bar1X, barY, barWidth, barHeight); // prima bară
+        g2.fillRect(bar2X, barY, barWidth, barHeight); // a doua bară
+    }
+
+    private void drawPauseMenu(Graphics g) {
+        // Fundal semi-transparent peste ecran
+        g.setColor(new Color(0, 0, 0, 150));
+        g.fillRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
+
+        // Butonul de reluare - fundal albastru
+        g.setColor(Color.BLUE);
+        g.fillRect(resumeButtonBounds.x, resumeButtonBounds.y, resumeButtonBounds.width, resumeButtonBounds.height);
+
+        // Chenar negru
+        g.setColor(Color.BLACK);
+        g.drawRect(resumeButtonBounds.x, resumeButtonBounds.y, resumeButtonBounds.width - 1, resumeButtonBounds.height - 1);
+
+        // Text portocaliu și font setat
+        g.setColor(Color.ORANGE);
+        Font font = new Font("Arial", Font.BOLD, 20);
+        g.setFont(font);
+
+        // Centrare aproximativă a textului
+        FontMetrics metrics = g.getFontMetrics(font);
+        String text = "Reluare joc";
+        int textWidth = metrics.stringWidth(text);
+        int textHeight = metrics.getHeight();
+
+        int textX = resumeButtonBounds.x + (resumeButtonBounds.width - textWidth) / 2;
+        int textY = resumeButtonBounds.y + (resumeButtonBounds.height + textHeight) / 2 - metrics.getDescent();
+
+        g.drawString(text, textX, textY);
+    }
+
+
 
 }
