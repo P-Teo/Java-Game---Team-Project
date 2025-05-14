@@ -87,7 +87,7 @@ public class Level1 extends Level {
         princessPath.add(new Point(absoluteX, player.y));
 
         // Spawn-uieste inamicii în continuare
-        while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 320) {
+        while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
             Enemylvl1 newEnemy = enemyPool.remove(0);
 
             // Poziții random pe Y între 100 și 500
@@ -128,16 +128,19 @@ public class Level1 extends Level {
         }
        // System.out.println("Număr inamici după eliminare: " + enemies.size());
 
-        if (!showMessage && !levelCompleted && !gameOver) {
+        if (!showMessage && !levelCompleted && !gameOver && !isPaused ) {
             if (maxNowEnemies == 0 && enemies.isEmpty()) {
                 System.out.println("Nivel finalizat!");
-                levelCompleted = true;
                 levelCompleteTime = System.currentTimeMillis();
                 // Calculează scorul final
                 long timeInSeconds = (levelCompleteTime - startTime) / 1000;
+                System.out.println(timeInSeconds+"        "+player.getHealth());
+
                 int timeBonus = Math.max(0, 10000 - (int)timeInSeconds * 10);
                 score += timeBonus;
                 score +=player.getHealth()*100;
+                System.out.println(score);
+                levelCompleted = true;
             }
         }
 
@@ -187,7 +190,7 @@ public class Level1 extends Level {
       ///  System.out.println("levelCompleted: " + levelCompleted);
 
 
-        if (!showMessage && !gameOver && !levelCompleted) {
+        if (!showMessage && !gameOver && !levelCompleted && !isPaused) {
             castle1.draw(g, background.getX());
             castle2.draw(g, background.getX());
             player.draw(g);
@@ -209,6 +212,7 @@ public class Level1 extends Level {
         // Afișează mesajul de felicitări
         if (levelCompleted) {
             game.nrLevel=2;
+            System.out.println(score);
             drawLevelCompleteMessage(g);
         }
 
@@ -283,6 +287,7 @@ public class Level1 extends Level {
             g2d.drawString(message, textX, textY);
 
             // Textul scorului final
+            System.out.println(score);
             String nrStar = "*".repeat(this.getStar());
             String scoreText = "Scor final: " + score +"   "+nrStar ;
             Font scoreFont = new Font("Georgia", Font.PLAIN, 24);

@@ -86,7 +86,7 @@ public class Level3 extends Level {
         princessPath.add(new Point(absoluteX, player.y));
 
         // Spawn-uieste inamicii în continuare
-        while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 320) {
+        while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
             Enemylvl3 newEnemy = enemyPool.remove(0);
 
             // Poziții random pe Y între 100 și 500
