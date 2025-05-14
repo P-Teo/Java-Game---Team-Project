@@ -25,10 +25,10 @@ public class Enemylvl3  extends Entity{
     public Enemylvl3() {
         x = 700;
         y = 300;
-        speed = 6;
+        speed = 7;
         width = 300;
         height = 220;
-        health = 10;
+        health = 20;
         damage = 0.002;
         direction = "left";
         frame = 0;

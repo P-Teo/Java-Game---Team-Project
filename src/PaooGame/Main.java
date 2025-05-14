@@ -6,7 +6,7 @@ public class Main
 {
     public static void main(String[] args)
     {
-        Game paooGame = new Game("PaooGame", 1010, 610);
+        Game paooGame = new Game("PaooGame", 1000, 610);
         paooGame.StartGame();
     }
 }

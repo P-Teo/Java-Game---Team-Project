@@ -29,7 +29,9 @@ public class Level5Background {
         return image;
     }
 
-
+    public int getX() {
+        return x;
+    }
 
     // Returnează lățimea imaginii de fundal
     public int getWidth() {

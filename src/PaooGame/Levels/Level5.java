@@ -28,7 +28,8 @@ public class Level5 extends Level {
     private boolean levelCompleted;
     private boolean gameOver;
     List<Enemylvl5_first> enemies = new ArrayList<>();
-    int maxEnemies = 1;
+    int maxEnemies = 2;
+    List<Enemylvl5_first> enemyPool = new ArrayList<>(maxEnemies);
     int maxNowEnemies;
     int currentEnemyIndex = 0;
     private boolean previousAttackState = false;
@@ -39,7 +40,7 @@ public class Level5 extends Level {
     private int maxPlayerX = 0;
     private long startTime;
     private long levelCompleteTime;
-
+    private boolean enemiesSpawned = false;
 
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
@@ -57,13 +58,18 @@ public class Level5 extends Level {
         levelCompleted = false;
         gameOver = false;
         startTime = System.currentTimeMillis();
+        for(int i = 0; i <maxEnemies;i++){
+            enemyPool.add(new Enemylvl5_first());
+        }
+
 
     }
 
     public void update(boolean left, boolean right, boolean up, boolean down, boolean attack, int wndWidth, int wndHeight) {
 
         if (!showMessage && !gameOver && !levelCompleted) {
-            player.update(left, right, up, down, attack, wndWidth, wndHeight);
+
+            player.update(left, right, up, down, attack, wndWidth, wndHeight, background.getX());
         }
 
         // Actualizează traseul prințesei
@@ -71,23 +77,24 @@ public class Level5 extends Level {
         princessPath.add(new Point(absoluteX, player.y));
 
         // Spawn-uieste inamicii în continuare
-        while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
-            Enemylvl5_first newEnemy = new Enemylvl5_first();
+        int middleOfScreen = wndWidth / 2;
 
-            // Poziții random pe Y între 100 și 500
-            int randomY = 100+ (int)(Math.random() * 400);
-            newEnemy.y = randomY;
+        // Spawn inamici doar când playerul ajunge la mijloc și nu au fost spawnați deja
+        if (!enemiesSpawned && absoluteX >= middleOfScreen) {
+            // Inamic din stânga
+            Enemylvl5_first leftEnemy = enemyPool.remove(0);
+            leftEnemy.x = -leftEnemy.width - 10;
+            leftEnemy.y = 100 + (int)(Math.random() * 400);
+            enemies.add(leftEnemy);
 
-            // Alternăm spawn-ul: unii din stânga, unii din dreapta
-            if (currentEnemyIndex % 3 == 0) {
-                newEnemy.x = -newEnemy.width - 10; // din stânga
-            } else {
-                newEnemy.x = wndWidth + 10; // din dreapta
-            }
+            // Inamic din dreapta
+            Enemylvl5_first rightEnemy = enemyPool.remove(0);
+            rightEnemy.x = wndWidth + 10;
+            rightEnemy.y = 100 + (int)(Math.random() * 400);
+            enemies.add(rightEnemy);
 
-            System.out.println("Inamic nou: X = " + newEnemy.x + ", Y = " + newEnemy.y);
-            enemies.add(newEnemy);
-            currentEnemyIndex++;
+            currentEnemyIndex += 2;
+            enemiesSpawned = true; // Asigură-te că nu vor apărea alți inamici
         }
 
 
@@ -195,19 +202,19 @@ public class Level5 extends Level {
 
     public void reset() {
         startTime = System.currentTimeMillis();
-        player = new Player();
-        background = new Level5Background();
+        // player = new Player();
+        //background = new Level1Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
-        enemies.clear();
-        maxPlayerX = 0;
-        maxNowEnemies = maxEnemies;
-        currentEnemyIndex = 0;
+        // maxPlayerX = 0;
+        //enemies.clear();
+        //maxNowEnemies = maxEnemies;
+        //currentEnemyIndex = 0;
         score=0;
         star=0;
         previousAttackState = false;
-        princessPath.clear();
+        //princessPath.clear();
     }
 
 

@@ -1,6 +1,7 @@
 package PaooGame.Levels;
 
 
+import PaooGame.Castle.Castle1;
 import PaooGame.Entity.Enemylvl4;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
@@ -25,9 +26,10 @@ public class Level4 extends Level {
     private boolean showMessage;
     private boolean levelCompleted;
     private boolean gameOver;
-    List<Enemylvl4> enemies = new ArrayList<>();
     int maxEnemies = 12;
     int maxNowEnemies;
+    List<Enemylvl4> enemies = new ArrayList<>();
+    List<Enemylvl4> enemyPool = new ArrayList<>(maxEnemies);
     int currentEnemyIndex = 0;
     private boolean previousAttackState = false;
     private Rectangle continueButtonBounds = new Rectangle(650, 350, 50, 50); // Poziția și dimensiunea butonului de continuare
@@ -37,7 +39,8 @@ public class Level4 extends Level {
     private int maxPlayerX = 0;
     private long startTime;
     private long levelCompleteTime;
-
+    private final Castle1 castle1;
+    private final Castle1 castle2;
 
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
@@ -55,6 +58,12 @@ public class Level4 extends Level {
         levelCompleted = false;
         gameOver = false;
         startTime = System.currentTimeMillis();
+        for(int i = 0; i < maxEnemies; i++){
+            enemyPool.add(new Enemylvl4());
+        }
+        castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle1.png");
+        castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle2.png");
+
 
 
     }
@@ -63,7 +72,7 @@ public class Level4 extends Level {
 
         background.update(left, right, wndWidth);
         if (!showMessage && !gameOver && !levelCompleted) {
-            player.update(left, right, up, down, attack, wndWidth, wndHeight);
+            player.update(left, right, up, down, attack, wndWidth, wndHeight, background.getX());
         }
 
         // Actualizează traseul prințesei
@@ -72,7 +81,7 @@ public class Level4 extends Level {
 
         // Spawn-uieste inamicii în continuare
         while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
-            Enemylvl4 newEnemy = new Enemylvl4();
+            Enemylvl4 newEnemy = enemyPool.remove(0);
 
             // Poziții random pe Y între 100 și 500
             int randomY = 100 + (int)(Math.random() * 400);
@@ -162,6 +171,8 @@ public class Level4 extends Level {
         ///System.out.println("levelCompleted: " + levelCompleted);
         if (!showMessage && !gameOver && !levelCompleted) {
 
+            castle1.draw(g, background.getX());
+            castle2.draw(g, background.getX());
             player.draw(g);
             drawScore(g);
             drawMiniMap(g);// Desenarea mini-hărții
@@ -194,19 +205,19 @@ public class Level4 extends Level {
 
     public void reset() {
         startTime = System.currentTimeMillis();
-        player = new Player();
-        background = new Level4Background();
+        // player = new Player();
+        //background = new Level1Background();
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
-        enemies.clear();
-        maxPlayerX = 0;
-        maxNowEnemies = maxEnemies;
-        currentEnemyIndex = 0;
+        // maxPlayerX = 0;
+        //enemies.clear();
+        //maxNowEnemies = maxEnemies;
+        //currentEnemyIndex = 0;
         score=0;
         star=0;
         previousAttackState = false;
-        princessPath.clear();
+        //princessPath.clear();
     }
 
 

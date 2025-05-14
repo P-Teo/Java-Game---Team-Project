@@ -30,7 +30,7 @@ public class Player extends Entity{
     public Player(){
         x = 200;
         y = 300;
-        speed = 2;
+        speed = 5;
         width = 200;
         height = 120;
         health = 100;
@@ -96,19 +96,53 @@ public class Player extends Entity{
     {
         return isAttacking;
     }
-    public void update(boolean moveLeft, boolean moveRight,boolean moveUp, boolean moveDown, boolean attackKey, int screenWidth,int screenHeight) {
+    public void update(boolean moveLeft, boolean moveRight,boolean moveUp, boolean moveDown, boolean attackKey, int screenWidth,int screenHeight,int background_x) {
 
         isMoving = false;
         isAttacking = false;
         isDead = false;
+        int centerMin = screenWidth / 2 - 100;
+        int centerMax = screenWidth / 2 + 100;
 
-        if (moveRight && x + width < screenWidth - 50) {
-            direction = "right";
-            x += speed;
-        } else if (moveLeft && x > 50) {
-            direction = "left";
-            x -= speed;
+        if (background_x == 0) {
+            // Fundalul nu mai poate merge în stânga — deci jucătorul are voie să se miște liber pe ecran
+            if (moveRight && x + width < screenWidth) {
+                direction = "right";
+                x += speed;
+            } else if (moveLeft && x > 0) {
+                direction = "left";
+                x -= speed;
+            }
+        } else {
+            // PLAYER SE MIȘCĂ DOAR ÎN CENTRU — restul mișcă fundalul
+            if (moveRight && x + width < centerMax && background_x > -3950) {
+                direction = "right";
+                x += speed;
+            } else if (moveRight && background_x > -3950) {
+                direction = "right";
+                // fundalul se va mișca în afară de asta
+            } else if (moveRight) {
+                direction = "right";
+                x += speed;
+            }
+
+            if (moveLeft && x > centerMin && background_x < 0) {
+                direction = "left";
+                x -= speed;
+            } else if (moveLeft && background_x < 0) {
+                direction = "left";
+                // fundalul se va mișca în afară de asta
+            } else if (moveLeft) {
+                direction = "left";
+                x -= speed;
+            }
         }
+        if(x<50)
+            x = 50;
+        if (x + width > screenWidth - 50) {
+            x = screenWidth - 50 - width;
+        }
+
         if(moveRight||moveLeft || moveUp || moveDown)
             isMoving = true;
 

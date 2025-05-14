@@ -25,9 +25,9 @@ public class Enemylvl5_first  extends Entity{
         x = 700;
         y = 300;
         speed = 6;
-        width = 300;
-        height = 220;
-        health = 10;
+        width = 360;
+        height = 200;
+        health = 30;
         damage = 0.002;
         direction = "left";
         frame = 0;

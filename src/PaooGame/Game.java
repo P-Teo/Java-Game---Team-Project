@@ -193,7 +193,7 @@ public class Game implements Runnable {
 
             Graphics g = null;
             try {
-                g = bs.getDrawGraphics();
+                g = bs.getDrawGraphics();////Aici da NULLPOINTEREXCEPTION
                 if (g == null) {
                     System.out.println("Graphics context was null. Skipping draw.");
                     continue;
@@ -391,11 +391,12 @@ public class Game implements Runnable {
                 gameOver.show();
                 nrLevel=1;
                 totalScore=0;
-                level1.reset();
+                this.reset();
+                /*level1.reset();
                 level2.reset();
                 level3.reset();
                 level4.reset();
-                level5.reset();
+                level5.reset();*/
                 break;
             default:
                 throw new IllegalStateException("Stare necunoscută: " + currentState);
@@ -439,7 +440,7 @@ public class Game implements Runnable {
             level1.draw(g);
             g.dispose();
         }
-       if (currentState == GameState.LEVEL_2) {
+        if (currentState == GameState.LEVEL_2) {
             level2.draw(g);
             g.dispose();
         }
@@ -486,12 +487,16 @@ public class Game implements Runnable {
     }
     public void reset()
     {
+        level1 = new Level1(this, wnd);
         level1.reset();
+        level2 = new Level2(this, wnd);
         level2.reset();
+        level3 = new Level3(this, wnd);
         level3.reset();
+        level4 = new Level4(this, wnd);
         level4.reset();
+        level5 = new Level5(this, wnd);
         level5.reset();
     }
 
 }
-

@@ -25,7 +25,7 @@ public class Enemylvl1  extends Entity{
     public Enemylvl1() {
         x = 700;
         y = 300;
-        speed = 6;
+        speed = 7;
         width = 150;
         height = 120;
         health = 10;
@@ -60,9 +60,10 @@ public class Enemylvl1  extends Entity{
                 sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_run_right_" + i + ".png"));
                 sharedLeftAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_attack_left_" + i + ".png"));
                 sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_attack_right_" + i + ".png"));
+            }
+            for(int i =0;i<15;i++){
                 sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_die_left_" + i + ".png"));
                 sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_die_right_" + i + ".png"));
-
             }
             sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_idle_right.png"));
             sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy1/Enemy1_idle_left.png"));
@@ -81,7 +82,6 @@ public class Enemylvl1  extends Entity{
 
     public void takeDamage(double amount) {
         health -= amount;
-        System.out.println("damage!!" + health);
         if (health <= 0 && !isDying) {
             health = 0;
             isDying =true;
@@ -97,7 +97,6 @@ public class Enemylvl1  extends Entity{
             return;
         }
         if(isDying){
-            System.out.println("is dying!!!");
             dieFrame++;
             if (dieFrame >= 15) {
                 dieFrame = 14;
