@@ -23,4 +23,5 @@ public class Entity {
     int frame;
     int attackFrame;
     int dieFrame;
+
 }

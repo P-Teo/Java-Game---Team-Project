@@ -9,6 +9,7 @@ import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Level3Background;
+import PaooGame.TrapObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -40,8 +41,12 @@ public class Level3 extends Level {
     private int maxPlayerX = 0;
     private long startTime;
     private long levelCompleteTime;
+
     private final Castle1 castle1;
     private final Castle1 castle2;
+
+    private  List<TrapObject> traps = new ArrayList<>();
+    private int maxTraps = 8;
 
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
@@ -68,6 +73,17 @@ public class Level3 extends Level {
         for(int i = 0;i< maxEnemies;i++){
             enemyPool.add(new Enemylvl3());
         }*/
+        for(int i=0;i<maxTraps;i++){
+
+            // Distribuire uniformă pe orizontală
+            int spacing = background.getWidth() / (maxTraps + 1); // +1 pentru spațiere la margini
+            int trap_x = spacing * (i + 1); // evită capetele absolute (0 și 4700)
+
+            // Random pe verticală între 140 și 520
+            int trap_y = 140 + (int)(Math.random() * (510 - 140));
+
+            traps.add(new TrapObject(trap_x,trap_y,50,50,"/Rocks_Traps/Rock2.png"));
+        }
 
     }
 
@@ -125,6 +141,10 @@ public class Level3 extends Level {
             }
         }
         // System.out.println("Număr inamici după eliminare: " + enemies.size());
+        for(TrapObject trap : traps ){
+            if(trap.areEntitiesColliding(player, absoluteX)){
+                player.takeDamage(trap.getDamage());
+            }}
 
         if (!showMessage && !levelCompleted && !gameOver) {
             if (maxNowEnemies == 0 && enemies.isEmpty()) {
@@ -193,6 +213,10 @@ public class Level3 extends Level {
 
             castle1.draw(g, background.getX());
             castle2.draw(g, background.getX());
+            for(TrapObject trap : traps){
+                trap.draw(g, background.getX());
+            }
+
             player.draw(g);
             drawScore(g);
             drawMiniMap(g);// Desenarea mini-hărții

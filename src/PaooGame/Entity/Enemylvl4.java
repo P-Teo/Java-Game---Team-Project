@@ -100,7 +100,6 @@ public class Enemylvl4  extends Entity{
             return;
         }
         if(isDying){
-            System.out.println("is dying!!!");
             dieFrame++;
             if (dieFrame >= 15) {
                 dieFrame = 14;

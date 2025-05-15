@@ -4,6 +4,7 @@ package PaooGame.Levels;
 import PaooGame.Castle.Castle1;
 import PaooGame.Entity.Enemylvl1;
 import PaooGame.Entity.Enemylvl4;
+import PaooGame.Entity.Enemylvl4_last;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
@@ -27,10 +28,10 @@ public class Level4 extends Level {
     private boolean showMessage;
     private boolean levelCompleted;
     private boolean gameOver;
-    int maxEnemies = 12;
+    int maxEnemies = 8;
     int maxNowEnemies;
     List<Enemylvl4> enemies = new ArrayList<>();
-    //List<Enemylvl4> enemyPool = new ArrayList<>(maxEnemies);
+    List<Enemylvl4_last> enemies2 = new ArrayList<>();
     int currentEnemyIndex = 0;
     private boolean previousAttackState = false;
     private Rectangle continueButtonBounds = new Rectangle(650, 350, 50, 50); // Poziția și dimensiunea butonului de continuare
@@ -48,11 +49,7 @@ public class Level4 extends Level {
     private boolean isPaused = false;
     private Rectangle pauseButtonBounds = new Rectangle(930, 8, 50, 50);
     private Rectangle resumeButtonBounds = new Rectangle(780, 530, 200, 50); // Poziția și dimensiunea butonului de reluare
-
-    private boolean clearedCurrentWave = false;
-    private float backgroundStartX; // Poziția inițială a background-ului
-    private float waveDistanceThreshold; // 3/4 din lungimea totală a scroll-ului
-    private int enemiesPerWave = 2 + (int)(Math.random() * 2); // 2-3 inamici per wave
+    private boolean lastEnemies = false;
 
     public Level4(Game game,GameWindow wnd) {
         this.game = game;
@@ -72,7 +69,7 @@ public class Level4 extends Level {
         }*/
         castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle1.png");
         castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle2.png");
-        waveDistanceThreshold = background.getWidth()*0.75f;
+
 
 
 
@@ -89,6 +86,7 @@ public class Level4 extends Level {
             player.update(left, right, up, down, attack, wndWidth, wndHeight, background.getX());
         }
 
+
         // Actualizează traseul prințesei
         int absoluteX = -background.getX() + player.x;
         princessPath.add(new Point(absoluteX, player.y));
@@ -96,7 +94,7 @@ public class Level4 extends Level {
         // Spawn-uieste inamicii în continuare
 
         while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
-            Enemylvl4 newEnemy =new Enemylvl4(); //enemyPool.remove(0);
+            Enemylvl4 newEnemy =new Enemylvl4();
 
             // Poziții random pe Y între 100 și 500
             int randomY = 100 + (int) (Math.random() * 400);
@@ -128,10 +126,10 @@ public class Level4 extends Level {
                 enemy.takeDamage(player.damage);
             }
         }
-        // System.out.println("Număr inamici după eliminare: " + enemies.size());
+
 
         if (!showMessage && !levelCompleted && !gameOver) {
-            if (maxNowEnemies == 0 && enemies.isEmpty()) {
+            if (maxNowEnemies == 0 && enemies.isEmpty()&& absoluteX>=4670) {
                 System.out.println("Nivel finalizat!");
                 levelCompleted = true;
                 levelCompleteTime = System.currentTimeMillis();
@@ -146,8 +144,6 @@ public class Level4 extends Level {
         if (player.isDead ) {
             gameOver = true;
         }
-        previousAttackState = attack;
-
 
         // Elimină inamicii uciși
         enemies.removeIf(e -> {
@@ -157,7 +153,46 @@ public class Level4 extends Level {
             }
             return false;
         });
+        if (maxNowEnemies == 0 && !lastEnemies) {
+            // De exemplu, folosim o altă clasă de inamic: BossEnemy sau Enemylvl5
+            Enemylvl4_last enemy1 = new Enemylvl4_last();
+            Enemylvl4_last enemy2 = new Enemylvl4_last();
 
+            // Setăm poziții diferite pentru fiecare
+            enemy1.x =  -enemy1.width - 100;;
+            enemy1.y = 300;
+
+            enemy2.x =  wndWidth + 10;
+            enemy2.y = 300;
+
+            enemies2.add(enemy1);
+            enemies2.add(enemy2);
+
+            maxNowEnemies += 2;
+            lastEnemies = true; // variabilă de control ca să nu se repete spawn-ul
+        }
+        for (Enemylvl4_last enemy : enemies2) {
+            enemy.update(player.x, player.y, wndWidth, wndHeight);
+
+            // Dacă inamicul e în range și atacă, lovește jucătorul
+            if (enemy.getIsAttacking() && areEntitiesColliding(player, enemy)) {
+                player.takeDamage(enemy.damage);
+            }
+            System.out.println(attack+" "+previousAttackState+ " "+ areEntitiesColliding(player, enemy));
+            // Dacă jucătorul atacă și e aproape, lovește inamicul
+            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) {
+                enemy.takeDamage(player.damage);
+            }
+        }
+        previousAttackState = attack;
+
+        enemies2.removeIf(e -> {
+            if (e.isDead) {
+                maxNowEnemies--;
+                return true;
+            }
+            return false;
+        });
 
         //actualizeaza scorul
         if (absoluteX > maxPlayerX) {
@@ -213,6 +248,11 @@ public class Level4 extends Level {
                 enemy.draw(g);
             }
         }
+        for (Enemylvl4_last enemy : enemies2) {
+            if (!showMessage) {
+                enemy.draw(g);
+            }
+        }
 
         // Afișează mesajul de felicitări
         if (levelCompleted) {
@@ -236,6 +276,7 @@ public class Level4 extends Level {
         gameOver = false;
          maxPlayerX = 0;
         enemies.clear();
+        enemies2.clear();
         /*enemyPool.clear();
         // Clear existing enemies in pool
         for (int i = 0; i < maxEnemies; i++) {
@@ -247,6 +288,7 @@ public class Level4 extends Level {
         star=0;
         previousAttackState = false;
         princessPath.clear();
+        lastEnemies = false;
     }
 
 
@@ -339,6 +381,11 @@ public class Level4 extends Level {
     }
 
     private boolean areEntitiesColliding(Player p, Enemylvl4 e) {
+        Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
+        Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
+        return rectP.intersects(rectE);
+    }
+    private boolean areEntitiesColliding(Player p, Enemylvl4_last e) {
         Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
         Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
         return rectP.intersects(rectE);

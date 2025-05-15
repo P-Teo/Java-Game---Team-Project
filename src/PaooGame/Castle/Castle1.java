@@ -26,4 +26,5 @@ public class Castle1 {
         int screenX = x + backgroundX;
         g.drawImage(castle_image, screenX, y,width,height, null);
     }
+
 }

@@ -9,6 +9,7 @@ import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Level2Background;
+import PaooGame.TrapObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -40,8 +41,12 @@ public class Level2 extends Level {
     private int maxPlayerX = 0;
     private long startTime;
     private long levelCompleteTime;
+
     private final Castle1 castle1;
     private final Castle1 castle2;
+
+    private  List<TrapObject> traps = new ArrayList<>();
+    private int maxTraps = 6;
 
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
@@ -49,7 +54,7 @@ public class Level2 extends Level {
     private Rectangle pauseButtonBounds = new Rectangle(930, 8, 50, 50);
     private Rectangle resumeButtonBounds = new Rectangle(780, 530, 200, 50); // Poziția și dimensiunea butonului de reluare
 
-    public Level2(Game game,GameWindow wnd) {
+    public Level2(Game game, GameWindow wnd) {
         this.game = game;
         this.wnd = wnd;
         maxNowEnemies=maxEnemies;
@@ -67,8 +72,17 @@ public class Level2 extends Level {
         }*/
         castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle1.png");
         castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle2.png");
+        for(int i=0;i<maxTraps;i++){
 
+            // Distribuire uniformă pe orizontală
+            int spacing = background.getWidth() / (maxTraps + 1); // +1 pentru spațiere la margini
+            int trap_x = spacing * (i + 1); // evită capetele absolute (0 și 4700)
 
+            // Random pe verticală între 140 și 520
+            int trap_y = 140 + (int)(Math.random() * (510 - 140));
+
+            traps.add(new TrapObject(trap_x,trap_y,50,50,"/Rocks_Traps/Rock1.png"));
+        }
     }
 
     public void update(boolean left, boolean right, boolean up, boolean down, boolean attack, int wndWidth, int wndHeight) {
@@ -125,6 +139,10 @@ public class Level2 extends Level {
                 previousAttackState = false; // Permite atacul din nou dacă jucătorul nu mai atacă
             }
         }
+        for(TrapObject trap : traps ){
+        if(trap.areEntitiesColliding(player, absoluteX)){
+            player.takeDamage(trap.getDamage());
+        }}
         // System.out.println("Număr inamici după eliminare: " + enemies.size());
 
         if (!showMessage && !levelCompleted && !gameOver) {
@@ -192,6 +210,9 @@ public class Level2 extends Level {
 
             castle1.draw(g, background.getX());
             castle2.draw(g, background.getX());
+            for(TrapObject trap : traps){
+                trap.draw(g, background.getX());
+            }
             player.draw(g);
             drawScore(g);
             drawMiniMap(g);// Desenarea mini-hărții

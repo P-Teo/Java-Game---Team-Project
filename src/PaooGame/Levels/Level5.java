@@ -1,7 +1,7 @@
 package PaooGame.Levels;
 
 
-import PaooGame.Entity.Enemylvl4_last;
+import PaooGame.Entity.Enemylvl5;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
@@ -25,7 +25,7 @@ public class Level5 extends Level {
     private boolean showMessage;
     private boolean levelCompleted;
     private boolean gameOver;
-    List<Enemylvl4_last> enemies = new ArrayList<>();
+    Enemylvl5 enemy ;
     int maxEnemies = 2;
     //List<Enemylvl4_last> enemyPool = new ArrayList<>(maxEnemies);
     int maxNowEnemies;
@@ -82,45 +82,38 @@ public class Level5 extends Level {
         princessPath.add(new Point(absoluteX, player.y));
 
         // Spawn-uieste inamicii în continuare
-        int middleOfScreen = wndWidth / 2;
+        int toSpawn = wndWidth / 4;
 
         // Spawn inamici doar când playerul ajunge la mijloc și nu au fost spawnați deja
-        if (!enemiesSpawned && absoluteX >= middleOfScreen) {
-            // Inamic din stânga
-            Enemylvl4_last leftEnemy = new Enemylvl4_last();//enemyPool.remove(0);
-            leftEnemy.x = -leftEnemy.width - 10;
-            leftEnemy.y = 100 + (int)(Math.random() * 400);
-            enemies.add(leftEnemy);
+        if (!enemiesSpawned && absoluteX >= toSpawn) {
+            enemy = new Enemylvl5();
+            enemy.x =wndWidth + 10;
+            enemy.y = 100 + (int)(Math.random() * 400);
 
-            // Inamic din dreapta
-            Enemylvl4_last rightEnemy = new Enemylvl4_last();//enemyPool.remove(0);
-            rightEnemy.x = wndWidth + 10;
-            rightEnemy.y = 100 + (int)(Math.random() * 400);
-            enemies.add(rightEnemy);
-
-            currentEnemyIndex += 2;
-            enemiesSpawned = true; // Asigură-te că nu vor apărea alți inamici
+            enemiesSpawned = true;
+            maxNowEnemies = 1; // Dacă folosești acest contor
         }
 
 
         // Înainte de eliminarea inamicilor
-        for (Enemylvl4_last enemy : enemies) {
+        if(enemy!=null) {
             enemy.update(player.x, player.y, wndWidth, wndHeight);
 
             // Dacă inamicul e în range și atacă, lovește jucătorul
             if (enemy.getIsAttacking() && areEntitiesColliding(player, enemy)) {
                 player.takeDamage(enemy.damage);
-            }
 
-            // Dacă jucătorul atacă și e aproape, lovește inamicul
-            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) {
-                enemy.takeDamage(player.damage);
+
+                // Dacă jucătorul atacă și e aproape, lovește inamicul
+                if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) {
+                    enemy.takeDamage(player.damage);
+                }
             }
         }
         // System.out.println("Număr inamici după eliminare: " + enemies.size());
 
         if (!showMessage && !levelCompleted && !gameOver) {
-            if (maxNowEnemies == 0 && enemies.isEmpty()) {
+            if (maxNowEnemies == 0 ) {
                 System.out.println("Nivel finalizat!");
                 levelCompleted = true;
                 levelCompleteTime = System.currentTimeMillis();
@@ -139,14 +132,10 @@ public class Level5 extends Level {
 
 
         // Elimină inamicii uciși
-        enemies.removeIf(e -> {
-            if (e.isDead) {
-                maxNowEnemies--;
-                return true;
-            }
-            return false;
-        });
-
+        if (enemy != null && enemy.isDead) {
+            enemy = null; // gata, a dispărut complet
+            maxNowEnemies--;
+        }
 
         //actualizeaza scorul
         if (absoluteX > maxPlayerX) {
@@ -195,11 +184,11 @@ public class Level5 extends Level {
         }
 
         // Desenează inamicii
-        for (Enemylvl4_last enemy : enemies) {
-            if(!showMessage){
+        if(!showMessage){
+            if(enemy!= null)
                 enemy.draw(g);
-            }
         }
+
 
         // Afișează mesajul de felicitări
         if (levelCompleted) {
@@ -228,7 +217,9 @@ public class Level5 extends Level {
         for (int i = 0; i < maxEnemies; i++) {
             enemyPool.add(new Enemylvl4_last());  // Add new enemies to reach maxEnemies
         }*/
-
+        if(enemy!= null) {
+            enemy = null;
+        }
         maxNowEnemies = maxEnemies;
         currentEnemyIndex = 0;
         score=0;
@@ -326,7 +317,7 @@ public class Level5 extends Level {
         return mouseX >= buttonX && mouseX <= buttonX + width && mouseY >= buttonY && mouseY <= buttonY + height;
     }
 
-    private boolean areEntitiesColliding(Player p, Enemylvl4_last e) {
+    private boolean areEntitiesColliding(Player p, Enemylvl5 e) {
         Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
         Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
         return rectP.intersects(rectE);
