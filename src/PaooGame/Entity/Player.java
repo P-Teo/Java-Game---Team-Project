@@ -81,12 +81,14 @@ public class Player extends Entity{
 
     public void takeDamage(double amount) {
         health -= amount;
+        System.out.println("damage_player" + health);
         if (health <= 0&& !isDying) {
             health = 0;
             isDying = true;
             dieFrame = 0;
         }
     }
+
 
     public void heal(int amount) {
         health += amount;

@@ -27,8 +27,8 @@ public class Enemylvl4_last extends Entity{
         speed = 6;
         width = 360;
         height = 200;
-        health = 40;
-        damage = 0.002;
+        health = 60;
+        damage = 0.003;
         direction = "left";
         frame = 0;
         attackFrame = 0;

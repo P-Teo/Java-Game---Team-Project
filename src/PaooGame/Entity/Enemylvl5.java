@@ -28,8 +28,8 @@ public class Enemylvl5 extends Entity{
         speed = 6;
         width = 360;
         height = 200;
-        health = 40;
-        damage = 0.002;
+        health = 120;
+        damage = 0.1;
         direction = "left";
         frame = 0;
         attackFrame = 0;
@@ -39,6 +39,7 @@ public class Enemylvl5 extends Entity{
         dieFrame = 0;
         if (!imagesLoaded) {
             loadSharedImages(); // încarcă o singură dată imaginile statice
+            loadHeartImages();
         }
 
         // Folosește imaginile partajate
@@ -75,6 +76,15 @@ public class Enemylvl5 extends Entity{
         }
     }
 
+    private void loadHeartImages() {
+        try {
+            fullHeart = ImageIO.read(getClass().getResource("/heart/Full.png"));
+            halfHeart = ImageIO.read(getClass().getResource("/heart/Half.png"));
+            emptyHeart = ImageIO.read(getClass().getResource("/heart/Empty.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public int getHealth() {
         return health;
@@ -82,7 +92,7 @@ public class Enemylvl5 extends Entity{
 
     public void takeDamage(double amount) {
         health -= amount;
-        System.out.println("damage!!" + health);
+        System.out.println("damage_enemy" + health);
         if (health <= 0) {
             health = 0;
             isDying =true;
@@ -186,6 +196,28 @@ public class Enemylvl5 extends Entity{
 
 
 
+
+        //pentru desenare inimi
+        int heartX = 20;
+        int heartY = 900;
+        int heartWidth = 40;
+        int heartHeight = 40;
+        int maxHearts = 3;
+        int hpPerHeart = 100 / maxHearts; // 33 (cu rest)
+
+        // Variabilă temporară pentru a calcula viața rămasă pentru fiecare inimă
+        int remainingHealth =health;
+
+        for (int i = 0; i < maxHearts; i++) {
+            if (remainingHealth >= hpPerHeart) {
+                g.drawImage(fullHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
+            } else if (remainingHealth >= hpPerHeart / 2) {
+                g.drawImage(halfHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
+            } else {
+                g.drawImage(emptyHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
+            }
+            remainingHealth -= hpPerHeart;
+        }
 
 
     }

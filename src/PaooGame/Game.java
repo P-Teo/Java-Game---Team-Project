@@ -35,6 +35,7 @@ public class Game implements Runnable {
     public int[] star = new int[7];
     private StartMenu startMenu;
     private GameOver gameOver;
+    private GameWin gameWin;
     private LevelSelect levelSelect;
     private int totalScore=0;
 
@@ -55,6 +56,7 @@ public class Game implements Runnable {
 
         startMenu = new StartMenu(this);
         gameOver = new GameOver(this);
+        gameWin = new GameWin(this);
         levelSelect = new LevelSelect(this);
         level1 = new Level1(this,wnd);
         level2 = new Level2(this,wnd);
@@ -374,6 +376,7 @@ public class Game implements Runnable {
                 break;
             case LEVEL_5:
                 // drawLevel(g, 5);
+
                 wnd.GetCanvas().setFocusable(true);
                 wnd.GetCanvas().requestFocusInWindow();
                 wnd.getFrame().getContentPane().removeAll();
@@ -385,8 +388,6 @@ public class Game implements Runnable {
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
                 break;
-            case PAUSE:
-                break;
             case GAME_OVER:
                 gameOver.show();
                 nrLevel=1;
@@ -396,6 +397,11 @@ public class Game implements Runnable {
                 level3.reset();
                 level4.reset();
                 level5.reset();
+                break;
+            case GAME_WIN:
+                gameWin.show();
+                nrLevel=1;
+                totalScore=0;
                 break;
             default:
                 throw new IllegalStateException("Stare necunoscută: " + currentState);

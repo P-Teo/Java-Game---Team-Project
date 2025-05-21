@@ -67,8 +67,8 @@ public class Level3 extends Level {
         levelCompleted = false;
         gameOver = false;
         startTime = System.currentTimeMillis();
-        castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle1.png");
-        castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle2.png");
+        castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle5.png");
+        castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle6.png");
         /*
         for(int i = 0;i< maxEnemies;i++){
             enemyPool.add(new Enemylvl3());

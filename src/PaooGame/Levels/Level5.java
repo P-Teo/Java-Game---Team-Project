@@ -59,9 +59,6 @@ public class Level5 extends Level {
         levelCompleted = false;
         gameOver = false;
         startTime = System.currentTimeMillis();
-        /*for(int i = 0; i <maxEnemies;i++){
-            enemyPool.add(new Enemylvl4_last());
-        }*/
 
 
     }
@@ -192,8 +189,9 @@ public class Level5 extends Level {
 
         // Afișează mesajul de felicitări
         if (levelCompleted) {
-            game.nrLevel=5;
+            game.nrLevel=6;
             drawLevelCompleteMessage(g);
+            game.setState(GameState.GAME_WIN);
         }
 
         // Afișează mesajul de Game Over

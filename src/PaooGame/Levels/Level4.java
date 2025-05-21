@@ -39,6 +39,7 @@ public class Level4 extends Level {
     private int score = 0;
     private int star=0;
     private int maxPlayerX = 0;
+    private int okk = 0;
     private long startTime;
     private long levelCompleteTime;
     private final Castle1 castle1;
@@ -58,6 +59,7 @@ public class Level4 extends Level {
         loadAssets();
         score=0;
         star=0;
+        okk=0;
         player = new Player();
         background = new Level4Background();
         showMessage = true;
@@ -67,9 +69,8 @@ public class Level4 extends Level {
         /*for(int i = 0; i < maxEnemies; i++){
             enemyPool.add(new Enemylvl4());
         }*/
-        castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle1.png");
-        castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle2.png");
-
+        castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle7.png");
+        castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle8.png");
 
 
 
@@ -132,12 +133,6 @@ public class Level4 extends Level {
             if (maxNowEnemies == 0 && enemies.isEmpty()&& absoluteX>=4670) {
                 System.out.println("Nivel finalizat!");
                 levelCompleted = true;
-                levelCompleteTime = System.currentTimeMillis();
-                // Calculează scorul final
-                long timeInSeconds = (levelCompleteTime - startTime) / 1000;
-                int timeBonus = Math.max(0, 10000 - (int)timeInSeconds * 10);
-                score += timeBonus;
-                score +=player.getHealth()*100;
             }
         }
 
@@ -256,6 +251,18 @@ public class Level4 extends Level {
 
         // Afișează mesajul de felicitări
         if (levelCompleted) {
+            System.out.println("Nivel finalizat!");
+            levelCompleted = true;
+            if(okk==0)
+            {
+                // Calculează scorul final
+                levelCompleteTime = System.currentTimeMillis();
+                long timeInSeconds = (levelCompleteTime - startTime) / 1000;
+                int timeBonus = Math.max(0, 10000 - (int)timeInSeconds * 10);
+                score += timeBonus;
+                score +=player.getHealth()*100;
+                okk=1;
+            }
             game.nrLevel=5;
             drawLevelCompleteMessage(g);
         }

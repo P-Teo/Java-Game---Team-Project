@@ -89,6 +89,40 @@ public class LevelSelect {
 
         });
 
+        setariBtn.addActionListener(e -> {
+            // Creăm un JPanel personalizat pentru mesaj
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+            // Imagini
+            ImageIcon sus = new ImageIcon("res/Taste/sageatasus.png");
+            ImageIcon jos = new ImageIcon("res/Taste/sageatajos.png");
+            ImageIcon stanga = new ImageIcon("res/Taste/sageatastanga.png");
+            ImageIcon dreapta = new ImageIcon("res/Taste/sageatastanga.png");
+            ImageIcon space = new ImageIcon("res/Taste/space.png");
+
+            // Panou pentru deplasare
+            JPanel deplasarePanel = new JPanel();
+            deplasarePanel.add(new JLabel("Deplasare: "));
+            deplasarePanel.add(new JLabel(sus));
+            deplasarePanel.add(new JLabel(jos));
+            deplasarePanel.add(new JLabel(stanga));
+            deplasarePanel.add(new JLabel(dreapta));
+
+            // Panou pentru lovire
+            JPanel lovirePanel = new JPanel();
+            lovirePanel.add(new JLabel("Lovire: "));
+            lovirePanel.add(new JLabel(space));
+
+            // Adăugăm panourile în panoul principal
+            panel.add(deplasarePanel);
+            panel.add(lovirePanel);
+
+            // Afișăm dialogul
+            JOptionPane.showMessageDialog(null, panel, "Cum să joci", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+
 
         // Setăm acțiunile pentru butoane
         level1Btn.addActionListener(e -> {
