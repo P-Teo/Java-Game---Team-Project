@@ -1,5 +1,6 @@
 package PaooGame;
 
+import java.util.Map;
 import javax.swing.*;
 import java.awt.*;
 
@@ -117,21 +118,27 @@ public class StartMenu {
             for (int i = 0; i < stars.length; i++) {
                 stars[i] = 0;
             }
+            game.getDb().resetScores(); // Șterge scorurile din baza de date
             game.reset();
             game.setState(GameState.LEVEL_SELECT);
 
         });
 
         continueBtn.addActionListener(e -> {
-            if(game.getTotalScore()==0)
-            {
+            int lastLevel = game.getDb().loadCurrentLevel(); // citește nivelul salvat
+
+            if (lastLevel <= 1 || lastLevel>=6) {
                 JOptionPane.showMessageDialog(null, "Nu ai joc început. Începe joc nou!");
-            }
-            else
-            {
+            } else {
+                game.nrLevel = lastLevel; // setează nivelul curent
+                Map<Integer, Integer> scores = game.getDb().loadAllScores(); // încarcă scorurile
+                int totalScore = scores.values().stream().mapToInt(Integer::intValue).sum();
+                game.setTotalScore(totalScore);
                 game.setState(GameState.LEVEL_SELECT);
             }
         });
+
+
 
         scoresBtn.addActionListener(e -> {
             JOptionPane.showMessageDialog(null, "Scorurile sunt goale momentan.");

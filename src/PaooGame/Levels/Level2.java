@@ -148,6 +148,7 @@ public class Level2 extends Level {
         if (!showMessage && !levelCompleted && !gameOver) {
             if (maxNowEnemies == 0 && enemies.isEmpty()) {
                 System.out.println("Nivel finalizat!");
+                game.getDb().saveLevelScore(game.nrLevel+1, score);
                 levelCompleted = true;
                 levelCompleteTime = System.currentTimeMillis();
                 // Calculează scorul final

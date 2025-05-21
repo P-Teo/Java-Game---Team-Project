@@ -139,7 +139,7 @@ public class Level1 extends Level {
                 int timeBonus = Math.max(0, 10000 - (int)timeInSeconds * 10);
                 score += timeBonus;
                 score +=player.getHealth()*100;
-                System.out.println(score);
+                game.getDb().saveLevelScore(game.nrLevel+1, score);
                 levelCompleted = true;
             }
         }

@@ -132,6 +132,7 @@ public class Level4 extends Level {
         if (!showMessage && !levelCompleted && !gameOver) {
             if (maxNowEnemies == 0 && enemies.isEmpty()&& absoluteX>=4670) {
                 System.out.println("Nivel finalizat!");
+                game.getDb().saveLevelScore(game.nrLevel+1, score);
                 levelCompleted = true;
             }
         }

@@ -38,6 +38,7 @@ public class Game implements Runnable {
     private GameWin gameWin;
     private LevelSelect levelSelect;
     private int totalScore=0;
+    private final DatabaseManager db = new DatabaseManager();
 
     public Game(String title, int width, int height) {
         /// Obiectul GameWindow este creat insa fereastra nu este construita
@@ -147,83 +148,66 @@ public class Game implements Runnable {
             return;
         }
 
-        System.out.println("Canvas displayable: " + canvas.isDisplayable());
-        System.out.println("Canvas showing: " + canvas.isShowing());
-
         while (runState) {
             Update();
 
-            // Dacă nu ești într-un nivel cu redare pe canvas, sari desenul
-            if (currentState != GameState.LEVEL_1 && currentState != GameState.LEVEL_2 && currentState != GameState.LEVEL_3 && currentState != GameState.LEVEL_4 && currentState != GameState.LEVEL_5) {
-                // Resetează BufferStrategy dacă nu ești într-un nivel grafic
+            // Sari desenul dacă nu ești într-un nivel activ
+            if (!(currentState == GameState.LEVEL_1 || currentState == GameState.LEVEL_2 ||
+                    currentState == GameState.LEVEL_3 || currentState == GameState.LEVEL_4 ||
+                    currentState == GameState.LEVEL_5)) {
                 bs = null;
-                try {
-                    Thread.sleep(16);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                sleepShort();
                 continue;
             }
 
             if (bs == null) {
-                canvas = wnd.GetCanvas(); // Asigură-te că ai referința actuală
-                bs = canvas.getBufferStrategy();
-                if (bs == null) {
-                    try {
-                        canvas.createBufferStrategy(2);
-                        bs = canvas.getBufferStrategy();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        continue; // Sari această iterație dacă eșuează
-                    }
-                    if (bs == null) {
-                        System.out.println("BufferStrategy creation failed.");
-                        continue;
-                    }
-                }
-            }
-            if (bs == null) {
                 canvas = wnd.GetCanvas();
-                canvas.createBufferStrategy(2);
-                bs = canvas.getBufferStrategy();
-                if (bs == null) {
-                    System.out.println("Still null after createBufferStrategy.");
+                try {
+                    canvas.createBufferStrategy(2);
+                    bs = canvas.getBufferStrategy();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    sleepShort();
                     continue;
                 }
             }
 
-
             Graphics g = null;
             try {
-                g = bs.getDrawGraphics();////Aici da NULLPOINTEREXCEPTION
+                g = bs.getDrawGraphics();
                 if (g == null) {
                     System.out.println("Graphics context was null. Skipping draw.");
+                    bs = null;
                     continue;
                 }
                 Draw(g);
             } catch (Exception ex) {
                 ex.printStackTrace();
-                bs = null; // reset
+                bs = null;
+                continue;
             } finally {
                 if (g != null) g.dispose();
             }
 
-
             try {
                 bs.show();
-            } catch (NullPointerException e) {
-                System.out.println("Caught NullPointerException on bs.show(). Skipping frame.");
-                bs = null; // Resetează strategia pentru siguranță
-                continue;
+            } catch (Exception e) {
+                System.out.println("Caught exception on bs.show(). Resetting buffer strategy.");
+                bs = null;
             }
 
-            try {
-                Thread.sleep(16); // ~60 FPS
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleepShort();
         }
     }
+
+    private void sleepShort() {
+        try {
+            Thread.sleep(16); // ~60 FPS
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
 
@@ -328,12 +312,6 @@ public class Game implements Runnable {
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
 
-                bs = null;
-                BufferStrategy newBs = wnd.GetCanvas().getBufferStrategy();
-                if (newBs == null) {
-                    wnd.GetCanvas().createBufferStrategy(2);
-                }
-
                 // Confirm the visibility and display state after everything
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
@@ -376,7 +354,6 @@ public class Game implements Runnable {
                 break;
             case LEVEL_5:
                 // drawLevel(g, 5);
-
                 wnd.GetCanvas().setFocusable(true);
                 wnd.GetCanvas().requestFocusInWindow();
                 wnd.getFrame().getContentPane().removeAll();
@@ -390,13 +367,7 @@ public class Game implements Runnable {
                 break;
             case GAME_OVER:
                 gameOver.show();
-                nrLevel=1;
-                totalScore=0;
-                level1.reset();
-                level2.reset();
-                level3.reset();
-                level4.reset();
-                level5.reset();
+                this.reset();
                 break;
             case GAME_WIN:
                 gameWin.show();
@@ -443,22 +414,27 @@ public class Game implements Runnable {
 
         if (currentState == GameState.LEVEL_1) {
             level1.draw(g);
+            db.saveCurrentLevel(nrLevel);
             g.dispose();
         }
         if (currentState == GameState.LEVEL_2) {
             level2.draw(g);
+            db.saveCurrentLevel(nrLevel);
             g.dispose();
         }
         if (currentState == GameState.LEVEL_3) {
             level3.draw(g);
+            db.saveCurrentLevel(nrLevel);
             g.dispose();
         }
         if (currentState == GameState.LEVEL_4) {
             level4.draw(g);
+            db.saveCurrentLevel(nrLevel);
             g.dispose();
         }
         if (currentState == GameState.LEVEL_5) {
             level5.draw(g);
+            db.saveCurrentLevel(nrLevel);
             g.dispose();
         }
 
@@ -497,6 +473,9 @@ public class Game implements Runnable {
         level3.reset();
         level4.reset();
         level5.reset();
+    }
+    public DatabaseManager getDb() {
+        return db;
     }
 
 }

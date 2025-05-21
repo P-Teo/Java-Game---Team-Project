@@ -190,6 +190,7 @@ public class Level5 extends Level {
         // Afișează mesajul de felicitări
         if (levelCompleted) {
             game.nrLevel=6;
+            game.getDb().resetScores(); // Șterge scorurile din baza de date
             drawLevelCompleteMessage(g);
             game.setState(GameState.GAME_WIN);
         }
