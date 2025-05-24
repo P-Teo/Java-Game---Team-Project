@@ -70,8 +70,8 @@ public class Level2 extends Level {
         /*for(int i =0;i< maxEnemies;i++){
             enemyPool.add(new Enemylvl2());
         }*/
-        castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle3.png");
-        castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle4.png");
+        castle1 = new Castle1(20,200,250,150, "/BackgroundCastle/Castle3.png");
+        castle2 = new Castle1(background.getWidth()-200,200,225,150,"/BackgroundCastle/Castle4.png");
         for(int i=0;i<maxTraps;i++){
 
             // Distribuire uniformă pe orizontală

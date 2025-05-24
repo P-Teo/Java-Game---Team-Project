@@ -10,6 +10,7 @@ import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Level4Background;
+import PaooGame.TrapObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -45,6 +46,10 @@ public class Level4 extends Level {
     private final Castle1 castle1;
     private final Castle1 castle2;
 
+
+    private  List<TrapObject> traps = new ArrayList<>();
+    private int maxTraps = 10;
+
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
     private boolean isPaused = false;
@@ -69,10 +74,20 @@ public class Level4 extends Level {
         /*for(int i = 0; i < maxEnemies; i++){
             enemyPool.add(new Enemylvl4());
         }*/
-        castle1 = new Castle1(-100,200,250,300, "/BackgroundCastle/Castle7.png");
-        castle2 = new Castle1(background.getWidth()-200,200,275,175,"/BackgroundCastle/Castle8.png");
+        castle1 = new Castle1(20,150,300,100, "/BackgroundCastle/Castle7.png");
+        castle2 = new Castle1(background.getWidth()-200,200,250,300,"/BackgroundCastle/Castle8.png");
 
+        for(int i=0;i<maxTraps;i++){
 
+            // Distribuire uniformă pe orizontală
+            int spacing = background.getWidth() / (maxTraps + 1); // +1 pentru spațiere la margini
+            int trap_x = spacing * (i + 1); // evită capetele absolute (0 și 4700)
+
+            // Random pe verticală între 140 și 520
+            int trap_y = 180 + (int)(Math.random() * (500 - 180));
+
+            traps.add(new TrapObject(trap_x,trap_y,50,50,"/Rocks_Traps/Rock3.png"));
+        }
 
     }
 
@@ -93,6 +108,11 @@ public class Level4 extends Level {
         princessPath.add(new Point(absoluteX, player.y));
 
         // Spawn-uieste inamicii în continuare
+        for(TrapObject trap : traps ){
+            if(trap.areEntitiesColliding(player, absoluteX)){
+                player.takeDamage(trap.getDamage());
+            }}
+
 
         while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
             Enemylvl4 newEnemy =new Enemylvl4();
@@ -228,6 +248,11 @@ public class Level4 extends Level {
 
             castle1.draw(g, background.getX());
             castle2.draw(g, background.getX());
+            for(TrapObject trap : traps){
+                trap.draw(g, background.getX());
+            }
+
+
             player.draw(g);
             drawScore(g);
             drawMiniMap(g);// Desenarea mini-hărții

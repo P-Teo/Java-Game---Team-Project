@@ -59,7 +59,8 @@ public class Level5 extends Level {
         levelCompleted = false;
         gameOver = false;
         startTime = System.currentTimeMillis();
-
+        player.setHealth(500);
+        player.speed = 8;
 
     }
 
@@ -225,6 +226,9 @@ public class Level5 extends Level {
         star=0;
         previousAttackState = false;
         princessPath.clear();
+        enemiesSpawned=false;
+        player.setHealth(500);
+        player.speed = 8;
     }
 
 

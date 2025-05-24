@@ -1,13 +1,14 @@
 package PaooGame;
 
-import PaooGame.Entity.Enemylvl5;
+
 import PaooGame.Entity.Player;
-import PaooGame.Graphics.Level2Background;
+
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TrapObject {
     int x;
@@ -35,6 +36,7 @@ public class TrapObject {
         Rectangle rectE = new Rectangle(this.x+20, this.y-10, this.width-40, this.height+20);
         return rectFeet.intersects(rectE);
     }
+
     public int getX(){
         return this.x;
     }

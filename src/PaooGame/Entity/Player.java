@@ -26,7 +26,7 @@ public class Player extends Entity{
     boolean isAttacking = false;
     private int deathFrameDelay = 0;
     private final int maxDeathFrameDelay = 3;
-
+    private int maxHealth;
     public Player(){
         x = 200;
         y = 300;
@@ -34,6 +34,7 @@ public class Player extends Entity{
         width = 200;
         height = 120;
         health = 100;
+        maxHealth=health;
         damage = 6;
         direction = "right";
         frame = 0;
@@ -78,6 +79,7 @@ public class Player extends Entity{
     public int getHealth() {
         return health;
     }
+    public void setHealth(int newHealth){ health= newHealth; maxHealth=newHealth;}
 
     public void takeDamage(double amount) {
         health -= amount;
@@ -220,7 +222,7 @@ public class Player extends Entity{
         int heartWidth = 40;
         int heartHeight = 40;
         int maxHearts = 3;
-        int hpPerHeart = 100 / maxHearts; // 33 (cu rest)
+        int hpPerHeart = maxHealth / maxHearts; // 33 (cu rest)
 
         // Variabilă temporară pentru a calcula viața rămasă pentru fiecare inimă
         int remainingHealth =health;
@@ -235,5 +237,6 @@ public class Player extends Entity{
             }
             remainingHealth -= hpPerHeart;
         }
+
     }
 }
