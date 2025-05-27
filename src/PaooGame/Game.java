@@ -39,6 +39,7 @@ public class Game implements Runnable {
     private LevelSelect levelSelect;
     private int totalScore=0;
     private final DatabaseManager db = new DatabaseManager();
+    private String playerName="jucator";
 
     public Game(String title, int width, int height) {
         /// Obiectul GameWindow este creat insa fereastra nu este construita
@@ -162,6 +163,7 @@ public class Game implements Runnable {
 
             if (bs == null) {
                 canvas = wnd.GetCanvas();
+                waitForCanvasReady(wnd.GetCanvas());
                 try {
                     canvas.createBufferStrategy(2);
                     bs = canvas.getBufferStrategy();
@@ -311,7 +313,7 @@ public class Game implements Runnable {
                 wnd.getFrame().revalidate();
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
-
+                waitForCanvasReady(wnd.GetCanvas());
                 // Confirm the visibility and display state after everything
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
@@ -324,9 +326,11 @@ public class Game implements Runnable {
                 wnd.getFrame().revalidate();
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
+                waitForCanvasReady(wnd.GetCanvas());
                 // Confirm the visibility and display state after everything
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
+                waitForCanvasReady(wnd.GetCanvas());
                 break;
             case LEVEL_3:
                 wnd.GetCanvas().setFocusable(true);
@@ -336,6 +340,7 @@ public class Game implements Runnable {
                 wnd.getFrame().revalidate();
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
+                waitForCanvasReady(wnd.GetCanvas());
                 // Confirm the visibility and display state after everything
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
@@ -348,6 +353,7 @@ public class Game implements Runnable {
                 wnd.getFrame().revalidate();
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
+                waitForCanvasReady(wnd.GetCanvas());
                 // Confirm the visibility and display state after everything
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
@@ -361,16 +367,19 @@ public class Game implements Runnable {
                 wnd.getFrame().revalidate();
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
+                waitForCanvasReady(wnd.GetCanvas());
                 // Confirm the visibility and display state after everything
                 System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
                 System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
                 break;
             case GAME_OVER:
                 gameOver.show();
+                waitForCanvasReady(wnd.GetCanvas());
                 this.reset();
                 break;
             case GAME_WIN:
                 gameWin.show();
+                waitForCanvasReady(wnd.GetCanvas());
                 nrLevel=1;
                 totalScore=0;
                 break;
@@ -474,6 +483,15 @@ public class Game implements Runnable {
         level4.reset();
         level5.reset();
     }
+    public void setPlayerName(String name) {
+        this.playerName = name;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+
     public DatabaseManager getDb() {
         return db;
     }

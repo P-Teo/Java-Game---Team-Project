@@ -195,29 +195,28 @@ public class Enemylvl5 extends Entity{
         g.drawImage(image,x,y,width,height,null);
 
 
+        // === Desenare Health Bar ===
+        int barWidth = 100;
+        int barHeight = 10;
+        int barX = x + width / 2 - barWidth / 2;  // centrat deasupra inamicului
+        int barY = y - 20;  // puțin deasupra
 
+        // Calculează procentajul de viață
+        double healthPercent = (double) health / 300;
+        int currentBarWidth = (int) (barWidth * healthPercent);
 
-        //pentru desenare inimi
-        int heartX = 20;
-        int heartY = 900;
-        int heartWidth = 40;
-        int heartHeight = 40;
-        int maxHearts = 3;
-        int hpPerHeart = 100 / maxHearts; // 33 (cu rest)
+        // Fundalul barei (gri)
+        g.setColor(Color.GRAY);
+        g.fillRect(barX, barY, barWidth, barHeight);
 
-        // Variabilă temporară pentru a calcula viața rămasă pentru fiecare inimă
-        int remainingHealth =health;
+        // Viața actuală (verde)
+        g.setColor(Color.GREEN);
+        g.fillRect(barX, barY, currentBarWidth, barHeight);
 
-        for (int i = 0; i < maxHearts; i++) {
-            if (remainingHealth >= hpPerHeart) {
-                g.drawImage(fullHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
-            } else if (remainingHealth >= hpPerHeart / 2) {
-                g.drawImage(halfHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
-            } else {
-                g.drawImage(emptyHeart, heartX + i * (heartWidth + 10), heartY, heartWidth, heartHeight, null);
-            }
-            remainingHealth -= hpPerHeart;
-        }
+        // Contur negru
+        g.setColor(Color.BLACK);
+        g.drawRect(barX, barY, barWidth, barHeight);
+
 
 
     }

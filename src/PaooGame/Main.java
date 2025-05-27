@@ -6,7 +6,12 @@ public class Main
 {
     public static void main(String[] args)
     {
-        Game paooGame = new Game("PaooGame", 1000, 610);
+        Game paooGame = new Game("PaooGame", 1000, 600);
         paooGame.StartGame();
     }
 }
+
+///scoruri
+///fog of war
+///comentarii despre pietre
+//comentarii cod

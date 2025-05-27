@@ -118,7 +118,7 @@ public class StartMenu {
             for (int i = 0; i < stars.length; i++) {
                 stars[i] = 0;
             }
-            game.getDb().resetScores(); // Șterge scorurile din baza de date
+           /// game.getDb().resetScores(); // Șterge scorurile din baza de date
             game.reset();
             game.setState(GameState.LEVEL_SELECT);
 
@@ -126,12 +126,18 @@ public class StartMenu {
 
         continueBtn.addActionListener(e -> {
             int lastLevel = game.getDb().loadCurrentLevel(); // citește nivelul salvat
+            System.out.println("levvvvvvvvvv " + lastLevel);
 
-            if (lastLevel <= 1 || lastLevel>=6) {
+            if (lastLevel < 1 || lastLevel>=6) {
                 JOptionPane.showMessageDialog(null, "Nu ai joc început. Începe joc nou!");
             } else {
                 game.nrLevel = lastLevel; // setează nivelul curent
                 Map<Integer, Integer> scores = game.getDb().loadAllScores(); // încarcă scorurile
+                // Afișare scoruri per nivel în consolă
+                System.out.println("Scorurile încărcate pe niveluri:");
+                for (Map.Entry<Integer, Integer> entry : scores.entrySet()) {
+                    System.out.println("Nivel " + entry.getKey() + ": " + entry.getValue());
+                }
                 int totalScore = scores.values().stream().mapToInt(Integer::intValue).sum();
                 game.setTotalScore(totalScore);
                 game.setState(GameState.LEVEL_SELECT);
@@ -141,8 +147,41 @@ public class StartMenu {
 
 
         scoresBtn.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Scorurile sunt goale momentan.");
+            DatabaseManager db = new DatabaseManager();
+            java.util.List<String[]> topScores = db.getTopScores(); // Nume, scor, stele
+
+            JPanel scorePanel = new JPanel();
+            scorePanel.setLayout(new BoxLayout(scorePanel, BoxLayout.Y_AXIS));
+            scorePanel.setBackground(Color.WHITE);
+            scorePanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+            JLabel titleLabel = new JLabel("Top 10 Scoruri");
+            titleLabel.setFont(new Font("Georgia", Font.BOLD, 20));
+            titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            scorePanel.add(titleLabel);
+            scorePanel.add(Box.createVerticalStrut(10));
+
+            if (topScores.isEmpty()) {
+                JLabel emptyLabel = new JLabel("Nu există scoruri salvate.");
+                emptyLabel.setFont(new Font("Georgia", Font.PLAIN, 14));
+                emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                scorePanel.add(emptyLabel);
+            } else {
+                for (int i = 0; i < topScores.size(); i++) {
+                    String[] row = topScores.get(i);
+                    String nume = row[0];
+                    String scor = row[1];
+                    String stele = row[2];
+                    JLabel label = new JLabel((i + 1) + ". " + nume + " - Scor: " + scor + " | Stele: " + stele);
+                    label.setFont(new Font("Georgia", Font.PLAIN, 14));
+                    scorePanel.add(label);
+                    scorePanel.add(Box.createVerticalStrut(5));
+                }
+            }
+
+            JOptionPane.showMessageDialog(null, scorePanel, "Clasament", JOptionPane.PLAIN_MESSAGE);
         });
+
 
 
         infoBtn.addActionListener(e -> {

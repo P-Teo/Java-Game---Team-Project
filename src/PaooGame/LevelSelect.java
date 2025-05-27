@@ -114,9 +114,15 @@ public class LevelSelect {
             lovirePanel.add(new JLabel("Lovire: "));
             lovirePanel.add(new JLabel(space));
 
+            // Mesaj de avertizare
+            JLabel warningLabel = new JLabel("⚠ Dacă ieși din joc, vei pierde stelele obținute până acum (scorul se va păstra la continuare)!");
+            warningLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT); // centrare
+
             // Adăugăm panourile în panoul principal
             panel.add(deplasarePanel);
             panel.add(lovirePanel);
+            panel.add(Box.createVerticalStrut(10)); // spațiu între secțiuni
+            panel.add(warningLabel);
 
             // Afișăm dialogul
             JOptionPane.showMessageDialog(null, panel, "Cum să joci", JOptionPane.INFORMATION_MESSAGE);

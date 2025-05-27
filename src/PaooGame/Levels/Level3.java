@@ -146,7 +146,6 @@ public class Level3 extends Level {
         if (!showMessage && !levelCompleted && !gameOver) {
             if (maxNowEnemies == 0 && enemies.isEmpty()) {
                 System.out.println("Nivel finalizat!");
-                game.getDb().saveLevelScore(game.nrLevel+1, score);
                 levelCompleted = true;
                 levelCompleteTime = System.currentTimeMillis();
                 // Calculează scorul final
@@ -154,6 +153,7 @@ public class Level3 extends Level {
                 int timeBonus = Math.max(0, 10000 - (int)timeInSeconds * 10);
                 score += timeBonus;
                 score +=player.getHealth()*100;
+                game.getDb().saveLevelScore(game.nrLevel+1, score);
             }
         }
 
@@ -430,18 +430,29 @@ public class Level3 extends Level {
 
             Graphics2D g2d = (Graphics2D) g.create();
 
+            // Desenează imaginea redimensionată
             g2d.drawImage(messageImage, x, y, newWidth, newHeight, null);
 
-            String message = "Începe lupta";
-            Font font = new Font("Georgia", Font.BOLD, 24);
-            g2d.setFont(font);
-            FontMetrics metrics = g2d.getFontMetrics(font);
-
-            int textX = x + (newWidth - metrics.stringWidth(message)) / 2;
-            int textY = y + (newHeight + metrics.getHeight()) / 2;
+            // Mesaj mic - font mai mic, poziționat mai sus în chenar
+            String smallMessage = "Ai grijă la pietre!";
+            Font smallFont = new Font("Georgia", Font.PLAIN, 16);
+            g2d.setFont(smallFont);
+            FontMetrics smallMetrics = g2d.getFontMetrics(smallFont);
+            int smallTextX = x + (newWidth - smallMetrics.stringWidth(smallMessage)) / 2;
+            int smallTextY = y + smallMetrics.getAscent() + 10; // puțin de jos din marginea superioară
 
             g2d.setColor(new Color(255, 215, 0));
-            g2d.drawString(message, textX, textY);
+            g2d.drawString(smallMessage, smallTextX, smallTextY);
+
+            // Mesaj mare - font mai mare, poziționat mai jos în chenar
+            String bigMessage = "Începe lupta";
+            Font bigFont = new Font("Georgia", Font.BOLD, 24);
+            g2d.setFont(bigFont);
+            FontMetrics bigMetrics = g2d.getFontMetrics(bigFont);
+            int bigTextX = x + (newWidth - bigMetrics.stringWidth(bigMessage)) / 2;
+            int bigTextY = y + newHeight - bigMetrics.getDescent() - 10; // puțin de sus din marginea inferioară
+
+            g2d.drawString(bigMessage, bigTextX, bigTextY);
 
             g2d.dispose();
         } else {

@@ -4,7 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-
+import java.awt.Rectangle;
 
 public class Player extends Entity{
 
@@ -90,7 +90,9 @@ public class Player extends Entity{
         }
     }
 
-
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, width, height);
+    }
     public void heal(int amount) {
         health += amount;
         if (health > 100) health = 100;

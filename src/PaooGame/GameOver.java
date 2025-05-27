@@ -6,6 +6,8 @@ import java.awt.*;
 public class GameOver {
     private Game game;
     private JPanel menuPanel;
+    private JButton scoreBtn;
+
 
     public GameOver(Game game) {
         this.game = game;
@@ -57,7 +59,7 @@ public class GameOver {
 
         //butoane
         JButton mesajBtn = createImageButton("res/butoane/Untitled1.png", 340, 75, "AI PIERDUT...      ",0);
-        JButton scoreBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "SCOR: ",1);
+        scoreBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "SCOR: ",1);
         JButton homeBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "ACASĂ",1);
         JButton exitBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "IEȘIRE",1);
 
@@ -74,6 +76,8 @@ public class GameOver {
         gbc.gridy++;
 
         backgroundLabel.add(buttonPanel, BorderLayout.EAST);
+
+
 
         // Funcționalitate
         homeBtn.addActionListener(e -> {
@@ -117,6 +121,10 @@ public class GameOver {
     }
 
     public void show() {
+
+        int scorTotal=game.getTotalScore();
+        scoreBtn.setText("SCOR: " + scorTotal);
+
         JFrame frame = game.getWnd().getFrame(); // You'll need to add this method to GameWindow
         frame.getContentPane().removeAll();
         frame.getContentPane().add(menuPanel);

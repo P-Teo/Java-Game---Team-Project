@@ -6,6 +6,8 @@ import java.awt.*;
 public class GameWin {
     private Game game;
     private JPanel menuPanel;
+    private JButton scoreBtn;
+    private JButton starBtn;
 
     public GameWin(Game game) {
         this.game = game;
@@ -44,8 +46,9 @@ public class GameWin {
         JPanel leftPanel = new JPanel();
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.setOpaque(false);
-        JButton scoreBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "SCOR: ", 1);
-        JButton starBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "STELE: ", 1);
+
+        scoreBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "SCOR: " , 1);
+        starBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "STELE: " , 1);
         leftPanel.add(scoreBtn);
         leftPanel.add(Box.createVerticalStrut(15)); // spațiu între butoane
         leftPanel.add(starBtn);
@@ -66,9 +69,64 @@ public class GameWin {
 
         backgroundLabel.add(bottomPanel, BorderLayout.SOUTH);
 
+        // === Panou central pentru introducerea numelui ===
+        JPanel namePanel = new JPanel();
+        namePanel.setLayout(new GridBagLayout());
+        namePanel.setOpaque(true);
+        namePanel.setBackground(new Color(0, 0, 0, 180)); // fundal semi-transparent
+        namePanel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+
+        GridBagConstraints nameGbc = new GridBagConstraints();
+        nameGbc.insets = new Insets(10, 10, 10, 10);
+        nameGbc.gridx = 0;
+        nameGbc.gridy = 0;
+
+        JLabel nameLabel = new JLabel("Nume jucător:");
+        nameLabel.setForeground(Color.WHITE);
+        nameLabel.setFont(new Font("Georgia", Font.BOLD, 24));
+        namePanel.add(nameLabel, nameGbc);
+
+        nameGbc.gridy++;
+        JTextField nameField = new JTextField(15);
+        nameField.setFont(new Font("Georgia", Font.PLAIN, 22));
+        namePanel.add(nameField, nameGbc);
+
+        nameGbc.gridy++;
+        JButton okButton = new JButton("OK");
+        okButton.setFont(new Font("Georgia", Font.BOLD, 22));
+        okButton.setFocusPainted(false);
+        namePanel.add(okButton, nameGbc);
+
+        // Adaugă acest panou în centrul fundalului
+        backgroundLabel.add(namePanel, BorderLayout.CENTER);
+
+        // Acțiune la apăsarea OK
+        okButton.addActionListener(e -> {
+            String playerName = nameField.getText().trim();
+            if (!playerName.isEmpty()) {
+                game.setPlayerName(playerName);
+                System.out.println("Nume introdus și setat: " + playerName);
+                int totalScore = game.getTotalScore();
+                int[] star = game.getStar();
+                // Salvează în baza de date
+                int totalStars = 0;
+                for (int i = 1; i <= 6; i++) {
+                    totalStars += star[i];
+                }
+                game.getDb().saveFinalResult(game.getPlayerName(), totalScore, totalStars);
+
+                namePanel.setVisible(false); // Ascunde chenarul
+            } else {
+                JOptionPane.showMessageDialog(null, "Introduceți un nume valid!", "Eroare", JOptionPane.WARNING_MESSAGE);
+            }
+
+        });
+
+
         // Funcționalitate butoane
         homeBtn.addActionListener(e -> game.setState(GameState.START_MENU));
         exitBtn.addActionListener(e -> System.exit(0));
+
     }
 
     private JButton createImageButton(String imagePath, int width, int height, String text, int x) {
@@ -98,6 +156,15 @@ public class GameWin {
     }
 
     public void show() {
+        int scorTotal=game.getTotalScore();
+        scoreBtn.setText("SCOR: " + scorTotal);
+        int[] star= game.getStar();
+        int steleTotal = 0;
+        for (int i = 1; i <= 6; i++) {
+            steleTotal += star[i];
+        }
+        starBtn.setText("STELE: " + steleTotal);
+
         JFrame frame = game.getWnd().getFrame();
         frame.getContentPane().removeAll();
         frame.getContentPane().add(menuPanel);

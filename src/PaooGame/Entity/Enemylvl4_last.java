@@ -183,7 +183,27 @@ public class Enemylvl4_last extends Entity{
         g.drawImage(image,x,y,width,height,null);
 
 
+// === Desenare Health Bar ===
+        int barWidth = 60;
+        int barHeight = 7;
+        int barX = x + width / 2 - barWidth / 2;  // centrat deasupra inamicului
+        int barY = y - 20;  // puțin deasupra
 
+        // Calculează procentajul de viață
+        double healthPercent = (double) health / 60;
+        int currentBarWidth = (int) (barWidth * healthPercent);
+
+        // Fundalul barei (gri)
+        g.setColor(Color.GRAY);
+        g.fillRect(barX, barY, barWidth, barHeight);
+
+        // Viața actuală (verde)
+        g.setColor(Color.GREEN);
+        g.fillRect(barX, barY, currentBarWidth, barHeight);
+
+        // Contur negru
+        g.setColor(Color.BLACK);
+        g.drawRect(barX, barY, barWidth, barHeight);
 
 
     }

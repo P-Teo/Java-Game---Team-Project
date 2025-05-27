@@ -2,11 +2,13 @@ package PaooGame.Levels;
 
 
 import PaooGame.Entity.Enemylvl5;
+import PaooGame.Entity.StarFinal;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Level5Background;
+import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -39,7 +41,8 @@ public class Level5 extends Level {
     private long startTime;
     private long levelCompleteTime;
     private boolean enemiesSpawned = false;
-
+    private ArrayList<StarFinal> starsFinal;
+    private int collectedStarsCount;
     // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private List<Point> princessPath = new ArrayList<>();
     private boolean isPaused = false;
@@ -61,6 +64,17 @@ public class Level5 extends Level {
         startTime = System.currentTimeMillis();
         player.setHealth(500);
         player.speed = 8;
+        collectedStarsCount = 0;
+        starsFinal = new ArrayList<>();
+        int[][] positions = {
+                {900, 200}, {100, 300}, {500, 350}, {700, 250}, {250, 450},
+                {200, 200}, {800, 300}, {400, 500}, {100, 450}, {700, 480},
+                {300, 300}, {900, 500}, {400, 200}, {600, 380}, {500, 250}
+        };
+        for (int[] pos : positions) {
+            starsFinal.add(new StarFinal(pos[0], pos[1]));
+        }
+
 
     }
 
@@ -83,7 +97,7 @@ public class Level5 extends Level {
         int toSpawn = wndWidth / 4;
 
         // Spawn inamici doar când playerul ajunge la mijloc și nu au fost spawnați deja
-        if (!enemiesSpawned && absoluteX >= toSpawn) {
+        if (!enemiesSpawned && absoluteX != 200) {
             enemy = new Enemylvl5();
             enemy.x =wndWidth + 10;
             enemy.y = 100 + (int)(Math.random() * 400);
@@ -111,7 +125,7 @@ public class Level5 extends Level {
         // System.out.println("Număr inamici după eliminare: " + enemies.size());
 
         if (!showMessage && !levelCompleted && !gameOver) {
-            if (maxNowEnemies == 0 ) {
+            if (maxNowEnemies == 0 && collectedStarsCount ==15 ) {
                 System.out.println("Nivel finalizat!");
                 levelCompleted = true;
                 levelCompleteTime = System.currentTimeMillis();
@@ -120,6 +134,15 @@ public class Level5 extends Level {
                 int timeBonus = Math.max(0, 10000 - (int)timeInSeconds * 10);
                 score += timeBonus;
                 score +=player.getHealth()*100;
+
+            }
+        }
+
+        for (StarFinal starFinal : starsFinal) {
+            if (!starFinal.isCollected() && player.getBounds().intersects(starFinal.getBounds())) {
+                starFinal.collect();
+                score++;
+                collectedStarsCount ++;
             }
         }
 
@@ -165,7 +188,12 @@ public class Level5 extends Level {
                 drawPauseMenu(g2d);
             }
         }
+
+
         g2d.dispose();
+        for (StarFinal starFinal : starsFinal) {
+            starFinal.draw(g);
+        }
         //System.out.println("showMessage: " + showMessage);
         ///System.out.println("gameOver: " + gameOver);
         ///System.out.println("levelCompleted: " + levelCompleted);
@@ -187,11 +215,14 @@ public class Level5 extends Level {
                 enemy.draw(g);
         }
 
-
+        if (!showMessage && !gameOver && !levelCompleted && !isPaused) {
+            drawFogOfWar(g);
+        }
         // Afișează mesajul de felicitări
         if (levelCompleted) {
-            game.nrLevel=6;
-            game.getDb().resetScores(); // Șterge scorurile din baza de date
+            game.getDb().saveLevelScore(game.nrLevel+1, score);
+            game.getDb().saveCurrentLevel(6);
+            game.nrLevel=0;
             drawLevelCompleteMessage(g);
             game.setState(GameState.GAME_WIN);
         }
@@ -349,18 +380,29 @@ public class Level5 extends Level {
 
             Graphics2D g2d = (Graphics2D) g.create();
 
+            // Desenează imaginea redimensionată
             g2d.drawImage(messageImage, x, y, newWidth, newHeight, null);
 
-            String message = "Începe lupta";
-            Font font = new Font("Georgia", Font.BOLD, 24);
-            g2d.setFont(font);
-            FontMetrics metrics = g2d.getFontMetrics(font);
-
-            int textX = x + (newWidth - metrics.stringWidth(message)) / 2;
-            int textY = y + (newHeight + metrics.getHeight()) / 2;
+            // Mesaj mic - font mai mic, poziționat mai sus în chenar
+            String smallMessage = "Colecționează toate bilele și omoară regele!";
+            Font smallFont = new Font("Georgia", Font.PLAIN, 16);
+            g2d.setFont(smallFont);
+            FontMetrics smallMetrics = g2d.getFontMetrics(smallFont);
+            int smallTextX = x + (newWidth - smallMetrics.stringWidth(smallMessage)) / 2;
+            int smallTextY = y + smallMetrics.getAscent() + 10; // puțin de jos din marginea superioară
 
             g2d.setColor(new Color(255, 215, 0));
-            g2d.drawString(message, textX, textY);
+            g2d.drawString(smallMessage, smallTextX, smallTextY);
+
+            // Mesaj mare - font mai mare, poziționat mai jos în chenar
+            String bigMessage = "Începe lupta";
+            Font bigFont = new Font("Georgia", Font.BOLD, 24);
+            g2d.setFont(bigFont);
+            FontMetrics bigMetrics = g2d.getFontMetrics(bigFont);
+            int bigTextX = x + (newWidth - bigMetrics.stringWidth(bigMessage)) / 2;
+            int bigTextY = y + newHeight - bigMetrics.getDescent() - 10; // puțin de sus din marginea inferioară
+
+            g2d.drawString(bigMessage, bigTextX, bigTextY);
 
             g2d.dispose();
         } else {
@@ -471,6 +513,41 @@ public class Level5 extends Level {
 
         g.drawString(text, textX, textY);
     }
+
+    private void drawFogOfWar(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g.create();
+
+        int screenWidth = wnd.GetWndWidth();
+        int screenHeight = wnd.GetWndHeight();
+
+        BufferedImage fog = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D fogGraphics = fog.createGraphics();
+
+        // 🔧 Activează anti-aliasing pentru cercul tăiat
+        fogGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        // Întunecă tot ecranul
+        fogGraphics.setColor(new Color(0, 0, 0, 220));
+        fogGraphics.fillRect(0, 0, screenWidth, screenHeight);
+
+        // Face zona din jurul prințesei clară
+        int radius = 100;
+        int centerX = player.x - background.getX() + player.width / 2;
+        int centerY = player.y + player.height / 2;
+
+        // Creează un cerc transparent (zona "vizibilă")
+        fogGraphics.setComposite(AlphaComposite.Clear);
+        fogGraphics.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
+
+        fogGraphics.dispose();
+
+        // Desenează ceața peste tot
+        g2d.drawImage(fog, 0, 0, null);
+        g2d.dispose();
+    }
+
+
+
 
 
 }
