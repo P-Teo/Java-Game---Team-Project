@@ -3,16 +3,25 @@ package PaooGame;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Clasa LevelSelect este responsabilă pentru interfața grafică de selecție a nivelurilor.
+ * Permite jucătorului să aleagă nivelul dorit, să vizualizeze scorul total, stelele acumulate și
+ * să acceseze opțiunile jocului. De asemenea, oferă feedback vizual pentru nivelurile câștigate sau blocate.
+ */
+
 public class LevelSelect {
     private Game game;
     private JPanel levelPanel;
 
+    ///Constructor pentru clasa LevelSelect.
     public LevelSelect(Game game) {
         this.game = game;
-        createUI();
+        createUI(); // Inițializare UI
     }
 
+    ///Creează și configurează interfața grafică pentru selectarea nivelurilor
     private void createUI() {
+
         // Creăm panoul principal pentru niveluri
         levelPanel = new JPanel();
         levelPanel.setLayout(null); // Setăm layout-ul la null pentru a putea poziționa elementele manual
@@ -30,8 +39,7 @@ public class LevelSelect {
         JLabel backgroundLabel = new JLabel(scaledIcon);
         backgroundLabel.setBounds(0, 0, 1000, 600);  // Setăm poziția și dimensiunile imaginii
 
-
-        // Creăm butoane pentru fiecare nivel
+        /// Creăm butoane pentru fiecare nivel
         JButton acasaBtn = createImageButton("res/butoane/Acasa.png", 70, 70);
         JButton scorBtn = createImageButton("res/butoane/Scor.png", 60, 60);
         JButton steleBtn = createImageButton("res/butoane/Stele.png", 60, 60);
@@ -64,21 +72,23 @@ public class LevelSelect {
         levelPanel.add(level5Btn);
         levelPanel.add(setariBtn);
 
-        // Adăugăm imaginea ca fundal
+        // Adăugăm imaginea ca fundal pentru a fi în spate
         levelPanel.add(backgroundLabel);
 
-
-        int[] star= game.getStar();
+        /// Funcționalitate butoane
+        // Butonul acasă
         acasaBtn.addActionListener(e -> {
             game.setState(GameState.START_MENU); // Start joc nou
-
         });
 
+        // scor
         scorBtn.addActionListener(e -> {
             JOptionPane.showMessageDialog(null, String.valueOf(game.getTotalScore())); // Start joc nou
 
         });
 
+        //număr stele
+        int[] star= game.getStar();
         steleBtn.addActionListener(e -> {
             int sum = 0;
             for (int i = 1; i <= 6; i++) {
@@ -86,21 +96,19 @@ public class LevelSelect {
             }
             String mesaj = "<html><body style='font-size:20px;'>" + sum + "   ⭐</body></html>";
             JOptionPane.showMessageDialog(null, mesaj);
-
         });
 
+        //buton setări- prezintă cum se joacă jocul
         setariBtn.addActionListener(e -> {
             // Creăm un JPanel personalizat pentru mesaj
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
             // Imagini
             ImageIcon sus = new ImageIcon("res/Taste/sageatasus.png");
             ImageIcon jos = new ImageIcon("res/Taste/sageatajos.png");
             ImageIcon stanga = new ImageIcon("res/Taste/sageatastanga.png");
             ImageIcon dreapta = new ImageIcon("res/Taste/sageatastanga.png");
             ImageIcon space = new ImageIcon("res/Taste/space.png");
-
             // Panou pentru deplasare
             JPanel deplasarePanel = new JPanel();
             deplasarePanel.add(new JLabel("Deplasare: "));
@@ -108,29 +116,23 @@ public class LevelSelect {
             deplasarePanel.add(new JLabel(jos));
             deplasarePanel.add(new JLabel(stanga));
             deplasarePanel.add(new JLabel(dreapta));
-
             // Panou pentru lovire
             JPanel lovirePanel = new JPanel();
             lovirePanel.add(new JLabel("Lovire: "));
             lovirePanel.add(new JLabel(space));
-
             // Mesaj de avertizare
             JLabel warningLabel = new JLabel("⚠ Dacă ieși din joc, vei pierde stelele obținute până acum (scorul se va păstra la continuare)!");
             warningLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT); // centrare
-
             // Adăugăm panourile în panoul principal
             panel.add(deplasarePanel);
             panel.add(lovirePanel);
             panel.add(Box.createVerticalStrut(10)); // spațiu între secțiuni
             panel.add(warningLabel);
-
             // Afișăm dialogul
             JOptionPane.showMessageDialog(null, panel, "Cum să joci", JOptionPane.INFORMATION_MESSAGE);
         });
 
-
-
-        // Setăm acțiunile pentru butoane
+        /// Niveluri: deschidere sau mesaj dacă sunt blocate
         level1Btn.addActionListener(e -> {
             if(game.nrLevel==1) {
                 game.setState(GameState.LEVEL_1);
@@ -139,7 +141,6 @@ public class LevelSelect {
                 String nrStar = "⭐".repeat(star[1]);
                 String mesaj = "<html><body style='font-size:20px;'>Nivel 1 câștigat!<br>" + nrStar + "</body></html>";
                 JOptionPane.showMessageDialog(null, mesaj);
-
             }
         });
 
@@ -206,6 +207,7 @@ public class LevelSelect {
         levelPanel.repaint();
     }
 
+    /// Metodă auxiliară pentru crearea butonului fără text
     private JButton createImageButton(String path, int width, int height) {
         ImageIcon originalIcon = new ImageIcon(path);
         Image scaledImage = originalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
@@ -221,11 +223,11 @@ public class LevelSelect {
         return button;
     }
 
+    /// Metodă pentru butoane cu imagine și text
     private JButton createImageButton(String imagePath, int width, int height, String text) {
         ImageIcon originalIcon = new ImageIcon(imagePath);
         Image scaledImage = originalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
-
         JButton button = new JButton(text, scaledIcon);
         button.setPreferredSize(new Dimension(width, height));
 
@@ -236,45 +238,37 @@ public class LevelSelect {
         button.setForeground(new Color(255, 215, 0)); // Auriu mai strălucitor
         button.setFont(new Font("Georgia", Font.BOLD, 18)); // Font îngroșat
 
-        // Schimbări importante:
         button.setBorderPainted(false);
         button.setContentAreaFilled(false);
         button.setFocusPainted(false);
-        button.setOpaque(false); // NU vrei să deseneze fundal
-
-
+        button.setOpaque(false);
         button.setPreferredSize(new Dimension(width, height));
 
         return button;
     }
 
+    ///Afișează ecranul de selectare a nivelurilor în fereastra principală.
     public void show() {
         System.out.println("Afișez Selectarea Nivelului");
         JFrame frame = game.getWnd().getFrame();
         frame.getContentPane().removeAll();
-        // Ascunde canvas-ul
-      //  game.getWnd().GetCanvas().setVisible(false);
-
-
-
-        frame.getContentPane().add(levelPanel);// Folosește setContentPane în loc de add
-
+        frame.getContentPane().add(levelPanel);
         // Forțează actualizarea
         frame.revalidate();
         frame.repaint();
-
         // Focus pe primul buton
         for (int i = 1; i < levelPanel.getComponentCount() && i <= 5; i++) {
             levelPanel.getComponent(i).requestFocusInWindow();
         }
-
-
-
     }
+
+    /// Ascunde panoul de selectare a nivelului
     public void hide() {
         levelPanel.setVisible(false);
 
     }
+
+    ///Returnează panoul principa
     public JPanel getPanel() {
         return levelPanel;
     }

@@ -11,12 +11,19 @@ import java.awt.image.BufferStrategy;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/**
+ * Clasa principala a jocului. Aceasta gestionează fereastra, starea jocului,
+ * și firul de execuție pentru actualizare și redare.
+ */
 
 public class Game implements Runnable {
-    private GameWindow wnd;        /*!< Fereastra in care se va desena tabla jocului*/
-    private boolean runState;   /*!< Flag ce starea firului de executie.*/
-    private Thread gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
-    private BufferStrategy bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
+    private GameWindow wnd;         /*!< Fereastra in care se va desena tabla jocului*/
+    private boolean runState;       /*!< Flag ce indică dacă jocul rulează.*/
+    private Thread gameThread;      /*!< Thread-ul jocului care rulează metoda run() */
+    private BufferStrategy bs;      /*!< Strategia de buffer pentru redare eficientă pe Canvas */
+    private Graphics g;           /*!< Context grafic pentru desenare */
+
+    // Stări de mișcare
     private boolean moveLeft = false;
     private boolean moveRight = false;
     private boolean moveUp = false;
@@ -24,38 +31,36 @@ public class Game implements Runnable {
     private boolean attackKey = false;
     private boolean jumpKey = false;
     private boolean jumpKeyHeld = false;
-    private Graphics g;          /*!< Referinta catre un context grafic.*/
-    private GameState currentState = GameState.START_MENU; // NEW
+
+    private GameState currentState = GameState.START_MENU;  /*!< Starea curentă a jocului */
+
+    // Obiecte pentru fiecare nivel
     private Level1 level1;
     private Level2 level2;
     private Level3 level3;
     private Level4 level4;
     private Level5 level5;
-    public int nrLevel=0;
-    public int[] star = new int[7];
+
+    public int nrLevel=0;       /*!< Nivelul curent */
+    public int[] star = new int[7];     /*!< Numărul de stele obținute pe fiecare nivel */
+    private int totalScore=0;       /*!< Scorul total acumulat */
+
+    // Meniuri
     private StartMenu startMenu;
     private GameOver gameOver;
     private GameWin gameWin;
     private LevelSelect levelSelect;
-    private int totalScore=0;
-    private final DatabaseManager db = new DatabaseManager();
-    private String playerName="jucator";
 
+    private final DatabaseManager db = new DatabaseManager();    /*!< Obiect pentru gestiunea bazei de date */
+    private String playerName="jucator";    /*!< Numele jucătorului */
+
+    /// Constructorul clasei Game. Inițializează fereastra și componentele jocului.
     public Game(String title, int width, int height) {
-        /// Obiectul GameWindow este creat insa fereastra nu este construita
-        /// Acest lucru va fi realizat in metoda init() prin apelul
-        /// functiei BuildGameWindow();
         wnd = new GameWindow(title, width, height);
-
-        /// Resetarea flagului runState ce indica starea firului de executie (started/stoped)
         runState = false;
-
-
-
         wnd.BuildGameWindow();
-        System.out.println("Canvas displayable after BuildGameWindow: " + wnd.GetCanvas().isDisplayable());
-        System.out.println("Canvas showing after BuildGameWindow: " + wnd.GetCanvas().isShowing());
 
+        // Inițializare componente
         startMenu = new StartMenu(this);
         gameOver = new GameOver(this);
         gameWin = new GameWin(this);
@@ -65,23 +70,26 @@ public class Game implements Runnable {
         level3 = new Level3(this,wnd);
         level4 = new Level4(this,wnd);
         level5 = new Level5(this,wnd);
+
         nrLevel=1;
         totalScore=0;
         currentState = GameState.START_MENU;
+
         startMenu.show();
         wnd.GetCanvas().setVisible(true);
         waitForCanvasReady(wnd.GetCanvas());
     }
 
 
+    /// Adaugă ascultători pentru taste și mouse pe canvas.
     private void setupKeyListener() {
         wnd.GetCanvas().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (currentState == GameState.START_MENU) {
-                    // TODO: Start menu control
+                    //nu avem nevoie
                 } else if (currentState == GameState.LEVEL_SELECT) {
-                    // TODO: Level select control
+                    //nu avem nevoie
                 } else if (currentState == GameState.LEVEL_1 || currentState == GameState.LEVEL_2 || currentState == GameState.LEVEL_3 || currentState == GameState.LEVEL_4 || currentState == GameState.LEVEL_5) {
                     if (e.getKeyCode() == KeyEvent.VK_RIGHT) moveRight = true;
                     if (e.getKeyCode() == KeyEvent.VK_LEFT) moveLeft = true;
@@ -90,7 +98,6 @@ public class Game implements Runnable {
                     if (e.getKeyCode() == KeyEvent.VK_SPACE) attackKey = true;
                 }
             }
-
             @Override
             public void keyReleased(KeyEvent e) {
                 if (currentState == GameState.LEVEL_1 || currentState == GameState.LEVEL_2 || currentState == GameState.LEVEL_3 || currentState == GameState.LEVEL_4 || currentState == GameState.LEVEL_5) {
@@ -101,107 +108,53 @@ public class Game implements Runnable {
                     if (e.getKeyCode() == KeyEvent.VK_SPACE) attackKey = false;
                 }
             }
-
             @Override
             public void keyTyped(KeyEvent e) {}
         });
         wnd.GetCanvas().addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                if (currentState == GameState.LEVEL_1 ) {
-                    level1.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
-                }
-                if (currentState == GameState.LEVEL_2) {
-                    level2.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
-                }
-                if (currentState == GameState.LEVEL_3 ) {
-                    level3.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
-                }
-                if (currentState == GameState.LEVEL_4) {
-                    level4.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
-                }
-                if (currentState == GameState.LEVEL_5 ) {
-                    level5.mouseClicked(e.getX(), e.getY()); // Ascunde mesajul când este apăsat mouse-ul
-                }
+                // Redirecționează clicul mouse-ului către nivelul activ
+                if (currentState == GameState.LEVEL_1 ) { level1.mouseClicked(e.getX(), e.getY()); }
+                if (currentState == GameState.LEVEL_2 ) { level2.mouseClicked(e.getX(), e.getY()); }
+                if (currentState == GameState.LEVEL_3 ) { level3.mouseClicked(e.getX(), e.getY()); }
+                if (currentState == GameState.LEVEL_4 ) { level4.mouseClicked(e.getX(), e.getY()); }
+                if (currentState == GameState.LEVEL_5 ) { level5.mouseClicked(e.getX(), e.getY()); }
             }
         });
         wnd.GetCanvas().setFocusable(true);
         wnd.GetCanvas().requestFocusInWindow();
     }
 
+    /// Inițializează resursele și ascultătorii.
+    private void InitGame() { System.out.println("Game Initialized");  setupKeyListener();  Assets.Init(); }
 
-
-    private void InitGame() {
-        System.out.println("Game Initialized");
-        setupKeyListener();
-        Assets.Init();
-
-    }
-
-
+    ///Metoda principală de rulare a jocului.
     public void run() {
         InitGame();
         System.out.println("Entering run method.");
         Canvas canvas = wnd.GetCanvas();
-
-        if (!canvas.isDisplayable()) {
-            System.out.println("Canvas still not displayable after waiting!");
-            return;
-        }
-
         while (runState) {
             Update();
-
             // Sari desenul dacă nu ești într-un nivel activ
-            if (!(currentState == GameState.LEVEL_1 || currentState == GameState.LEVEL_2 ||
-                    currentState == GameState.LEVEL_3 || currentState == GameState.LEVEL_4 ||
-                    currentState == GameState.LEVEL_5)) {
-                bs = null;
-                sleepShort();
-                continue;
+            if (!(currentState == GameState.LEVEL_1 || currentState == GameState.LEVEL_2 || currentState == GameState.LEVEL_3 || currentState == GameState.LEVEL_4 || currentState == GameState.LEVEL_5)) {
+                bs = null;  sleepShort(); continue;
             }
-
             if (bs == null) {
                 canvas = wnd.GetCanvas();
                 waitForCanvasReady(wnd.GetCanvas());
-                try {
-                    canvas.createBufferStrategy(2);
-                    bs = canvas.getBufferStrategy();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    sleepShort();
-                    continue;
-                }
+                try { canvas.createBufferStrategy(2);  bs = canvas.getBufferStrategy(); } catch (Exception e) { e.printStackTrace(); sleepShort(); continue; }
             }
-
             Graphics g = null;
-            try {
-                g = bs.getDrawGraphics();
-                if (g == null) {
-                    System.out.println("Graphics context was null. Skipping draw.");
-                    bs = null;
-                    continue;
-                }
-                Draw(g);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                bs = null;
-                continue;
-            } finally {
-                if (g != null) g.dispose();
-            }
-
-            try {
-                bs.show();
-            } catch (Exception e) {
-                System.out.println("Caught exception on bs.show(). Resetting buffer strategy.");
-                bs = null;
-            }
-
-            sleepShort();
+            try { g = bs.getDrawGraphics(); if (g == null) { bs = null; continue; } Draw(g);
+            } catch (Exception ex) { ex.printStackTrace(); bs = null; continue;
+            } finally { if (g != null) g.dispose(); }
+            try { bs.show();  } catch (Exception e) {  System.out.println("Caught exception on bs.show(). Resetting buffer strategy."); bs = null; }
+            sleepShort(); // Controlul FPS-ului (~60)
         }
     }
 
+    ///O mică pauză între cadre pentru a menține 60 FPS.
     private void sleepShort() {
         try {
             Thread.sleep(16); // ~60 FPS
@@ -210,58 +163,38 @@ public class Game implements Runnable {
         }
     }
 
-
-
-
+   ///Pornește jocul și firul său de execuție.
     public synchronized void StartGame() {
         System.out.println("Starting game...");
         if (runState == false) {
-            /// Se actualizeaza flagul de stare a threadului
-            runState = true;
-            /// Se construieste threadul avand ca parametru obiectul Game. De retinut faptul ca Game class
-            /// implementeaza interfata Runnable. Threadul creat va executa functia run() suprascrisa in clasa Game.
+            runState = true;    // Se actualizeaza flagul de stare a threadului
             gameThread = new Thread(this);
-            /// Threadul creat este lansat in executie (va executa metoda run())
-            gameThread.start();
-        } else {
-            /// Thread-ul este creat si pornit deja
-            return;
-        }
+            gameThread.start();  // Threadul creat este lansat in executie
+        } else { return; }
     }
 
-
-    public synchronized void StopGame() {
-        if (runState == true) {
-            /// Actualizare stare thread
-            runState = false;
-            /// Metoda join() arunca exceptii motiv pentru care trebuie incadrata intr-un block try - catch.
-            try {
-                /// Metoda join() pune un thread in asteptare panca cand un altul isi termina executie.
-                /// Totusi, in situatia de fata efectul apelului este de oprire a threadului.
-                gameThread.join();
-            } catch (InterruptedException ex) {
-                /// In situatia in care apare o exceptie pe ecran vor fi afisate informatii utile pentru depanare.
-                ex.printStackTrace();
-            }
-        } else {
-            /// Thread-ul este oprit deja.
-            return;
+        /// Oprește execuția jocului.
+        public synchronized void StopGame() {
+            if (runState == true) {
+                runState = false;   // Actualizare stare thread
+                try {
+                    // Metoda join() pune un thread in asteptare pana cand un altul isi termina executie.
+                    gameThread.join(); // Totusi, in situatia de fata efectul apelului este de oprire a threadului.
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace(); // In situatia in care apare o exceptie
+                }
+            } else { return; }
         }
-    }
 
 
+        //Setează o nouă stare a jocului și gestionează tranzițiile între ecrane.
     public void setState(GameState newState) {
         System.out.println("Changing state from " + currentState + " to " + newState);
-        System.out.println(nrLevel);
         GameState oldState;
         oldState=currentState;
         currentState = newState;
         bs = null;
-        moveRight = false;
-        moveLeft = false;
-        moveUp = false;
-        moveDown = false;
-        attackKey = false;
+        moveRight = false;  moveLeft = false; moveUp = false; moveDown = false; attackKey = false;
         switch (currentState) {
             case START_MENU:
                 startMenu.show();
@@ -270,28 +203,22 @@ public class Game implements Runnable {
             case LEVEL_SELECT:
                 switch (oldState) {
                     case LEVEL_1:
-                        totalScore += level1.getScore(); // Adaugă scorul obținut la nivelul 1
-                        star[1]=level1.getStar();
+                        totalScore += level1.getScore(); star[1]=level1.getStar(); // Adaugă scorul obținut la nivelul 1
                         break;
                     case LEVEL_2:
-                        totalScore += level2.getScore(); // Adaugă scorul obținut la nivelul 2
-                        star[2]=level2.getStar();
+                        totalScore += level2.getScore(); star[2]=level2.getStar();// Adaugă scorul obținut la nivelul 2
                         break;
                     case LEVEL_3:
-                        totalScore += level3.getScore(); // Adaugă scorul obținut la nivelul 3
-                        star[3]=level3.getStar();
+                        totalScore += level3.getScore(); star[3]=level3.getStar(); // Adaugă scorul obținut la nivelul 3
                         break;
                     case LEVEL_4:
-                        totalScore += level4.getScore(); // Adaugă scorul obținut la nivelul 4
-                        star[4]=level4.getStar();
+                        totalScore += level4.getScore(); star[4]=level4.getStar(); // Adaugă scorul obținut la nivelul 4
                         break;
                     case LEVEL_5:
-                        totalScore += level5.getScore(); // Adaugă scorul obținut la nivelul 5
-                        star[5]=level5.getStar();
+                        totalScore += level5.getScore(); star[5]=level5.getStar(); // Adaugă scorul obținut la nivelul 5
                         break;
                     default:
-                        // Dacă starea nu este una validă, nu adăugăm nimic
-                        System.out.println("Stare de joc necunoscută!");
+                        System.out.println("Stare de joc necunoscută!");// Dacă starea nu este una validă, nu adăugăm nimic
                         break;
                 }
                 wnd.GetCanvas().setVisible(false); // Ascundem canvas-ul
@@ -300,12 +227,8 @@ public class Game implements Runnable {
                 wnd.getFrame().revalidate(); // Actualizăm UI-ul
                 wnd.getFrame().repaint();
                 levelSelect.show();
-                System.out.println("Canvas displayable after: " + wnd.GetCanvas().isDisplayable());
-                System.out.println("Canvas showing after: " + wnd.GetCanvas().isShowing());
                 break;
             case LEVEL_1:
-                //   levelSelect.hide(); // Hide level selection panel
-                // Ensure the canvas is displayed properly
                 wnd.GetCanvas().setFocusable(true);
                 wnd.GetCanvas().requestFocusInWindow();
                 wnd.getFrame().getContentPane().removeAll();
@@ -314,10 +237,7 @@ public class Game implements Runnable {
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
                 waitForCanvasReady(wnd.GetCanvas());
-                // Confirm the visibility and display state after everything
-                System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
-                System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
-                break;
+                 break;
             case LEVEL_2:
                 wnd.GetCanvas().setFocusable(true);
                 wnd.GetCanvas().requestFocusInWindow();
@@ -327,9 +247,6 @@ public class Game implements Runnable {
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
                 waitForCanvasReady(wnd.GetCanvas());
-                // Confirm the visibility and display state after everything
-                System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
-                System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
                 waitForCanvasReady(wnd.GetCanvas());
                 break;
             case LEVEL_3:
@@ -341,9 +258,6 @@ public class Game implements Runnable {
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
                 waitForCanvasReady(wnd.GetCanvas());
-                // Confirm the visibility and display state after everything
-                System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
-                System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
                 break;
             case LEVEL_4:
                 wnd.GetCanvas().setFocusable(true);
@@ -354,12 +268,8 @@ public class Game implements Runnable {
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
                 waitForCanvasReady(wnd.GetCanvas());
-                // Confirm the visibility and display state after everything
-                System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
-                System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
-                break;
+               break;
             case LEVEL_5:
-                // drawLevel(g, 5);
                 wnd.GetCanvas().setFocusable(true);
                 wnd.GetCanvas().requestFocusInWindow();
                 wnd.getFrame().getContentPane().removeAll();
@@ -368,10 +278,7 @@ public class Game implements Runnable {
                 wnd.getFrame().repaint();
                 wnd.GetCanvas().setVisible(true);
                 waitForCanvasReady(wnd.GetCanvas());
-                // Confirm the visibility and display state after everything
-                System.out.println("Canvas displayable after revalidation: " + wnd.GetCanvas().isDisplayable());
-                System.out.println("Canvas showing after revalidation: " + wnd.GetCanvas().isShowing());
-                break;
+                 break;
             case GAME_OVER:
                 gameOver.show();
                 waitForCanvasReady(wnd.GetCanvas());
@@ -389,73 +296,36 @@ public class Game implements Runnable {
 
     }
 
-
+    /// Actualizează logica jocului în funcție de starea curentă.
     private void Update() {
-        if (currentState == GameState.LEVEL_1) {
-            level1.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
-        }
-        if (currentState == GameState.LEVEL_2) {
-            level2.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
-        }
-        if (currentState == GameState.LEVEL_3) {
-            level3.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
-        }
-        if (currentState == GameState.LEVEL_4) {
-            level4.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
-        }
-        if (currentState == GameState.LEVEL_5) {
-            level5.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight());
-        }
+        if (currentState == GameState.LEVEL_1) { level1.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight()); }
+        if (currentState == GameState.LEVEL_2) { level2.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight()); }
+        if (currentState == GameState.LEVEL_3) { level3.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight()); }
+        if (currentState == GameState.LEVEL_4) { level4.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight()); }
+        if (currentState == GameState.LEVEL_5) { level5.update(moveLeft, moveRight, moveUp, moveDown, attackKey, wnd.GetWndWidth(), wnd.GetWndHeight()); }
     }
 
-
-
-
-
-
+    /// Desenează nivelul activ pe ecran.
     private void Draw(Graphics g) {
-        if (g == null) {
-            System.out.println("Graphics context is null in Draw");
-            return;  // Safety check
-        }
-
-        // Clear the screen
-
-        if (currentState == GameState.LEVEL_1) {
-            level1.draw(g);
-            db.saveCurrentLevel(nrLevel);
-            g.dispose();
-        }
-        if (currentState == GameState.LEVEL_2) {
-            level2.draw(g);
-            db.saveCurrentLevel(nrLevel);
-            g.dispose();
-        }
-        if (currentState == GameState.LEVEL_3) {
-            level3.draw(g);
-            db.saveCurrentLevel(nrLevel);
-            g.dispose();
-        }
-        if (currentState == GameState.LEVEL_4) {
-            level4.draw(g);
-            db.saveCurrentLevel(nrLevel);
-            g.dispose();
-        }
-        if (currentState == GameState.LEVEL_5) {
-            level5.draw(g);
-            db.saveCurrentLevel(nrLevel);
-            g.dispose();
-        }
-
-
+        if (g == null) { return; }
+        if (currentState == GameState.LEVEL_1) { level1.draw(g); db.saveCurrentLevel(nrLevel); g.dispose(); }
+        if (currentState == GameState.LEVEL_2) { level2.draw(g); db.saveCurrentLevel(nrLevel); g.dispose(); }
+        if (currentState == GameState.LEVEL_3) { level3.draw(g); db.saveCurrentLevel(nrLevel); g.dispose(); }
+        if (currentState == GameState.LEVEL_4) { level4.draw(g); db.saveCurrentLevel(nrLevel); g.dispose(); }
+        if (currentState == GameState.LEVEL_5) { level5.draw(g); db.saveCurrentLevel(nrLevel); g.dispose(); }
     }
 
-    public GameState getState() {
-        return currentState;
+    /// Resetează toate nivelurile.
+    public void reset()
+    {
+        level1.reset();
+        level2.reset();
+        level3.reset();
+        level4.reset();
+        level5.reset();
     }
-    public GameWindow getWnd() {
-        return wnd;
-    }
+
+    /// Funcții utilitare și accesorii
     private void waitForCanvasReady(Canvas canvas) {
         while (!canvas.isDisplayable() || !canvas.isShowing()) {
             try {
@@ -465,35 +335,30 @@ public class Game implements Runnable {
             }
         }
     }
+
+    public GameState getState() {
+        return currentState;
+    }   ///returnează starea
+    public GameWindow getWnd() {
+        return wnd;
+    }   ///returnează fereastra
     public int getTotalScore(){
         return totalScore;
-    }
+    }   ///returnează scorul total
     public int[] getStar(){
         return star;
-    }
-
+    }   ///returnează stelele la fiecare nivel
     public void setTotalScore(int x){
         totalScore=x;
-    }
-    public void reset()
-    {
-        level1.reset();
-        level2.reset();
-        level3.reset();
-        level4.reset();
-        level5.reset();
-    }
+    }   ///setez scorul total
     public void setPlayerName(String name) {
         this.playerName = name;
-    }
-
+    }   ///setez numele jucătorului //va fi apelată doar dacă se câștigă jocul
     public String getPlayerName() {
         return playerName;
-    }
-
-
+    }   ///returnează numele jucătorului
     public DatabaseManager getDb() {
         return db;
-    }
+    }   ///returnează baza de date
 
 }

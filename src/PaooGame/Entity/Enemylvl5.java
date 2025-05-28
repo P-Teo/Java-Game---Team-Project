@@ -7,8 +7,10 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 
+/// Clasa pentru inamicul de nivel 5, moștenește clasa de bază Entity
 
 public class Enemylvl5 extends Entity{
+    // Imagini partajate între toți inamicii de acest tip
     private static BufferedImage[] sharedLeftRunning = new BufferedImage[12];
     private static BufferedImage[] sharedRightRunning = new BufferedImage[12];
     private static BufferedImage[] sharedLeftAttack = new BufferedImage[12];
@@ -17,11 +19,12 @@ public class Enemylvl5 extends Entity{
     private static BufferedImage[] sharedRightDie = new BufferedImage[15];
     private static BufferedImage sharedIdleRight;
     private static BufferedImage sharedIdleLeft;
+    // Indicator pentru a evita încărcarea multiplă
     private static boolean imagesLoaded = false;
-
+    // Stare de atac a inamicului
     boolean isAttacking = false;
 
-
+    /// Constructor
     public Enemylvl5() {
         x = 700;
         y = 300;
@@ -39,10 +42,8 @@ public class Enemylvl5 extends Entity{
         dieFrame = 0;
         if (!imagesLoaded) {
             loadSharedImages(); // încarcă o singură dată imaginile statice
-            loadHeartImages();
         }
-
-        // Folosește imaginile partajate
+        // Setare referințe către imaginile comune
         leftRunning = sharedLeftRunning;
         rightRunning = sharedRightRunning;
         leftAttack = sharedLeftAttack;
@@ -53,10 +54,9 @@ public class Enemylvl5 extends Entity{
         idle_left = sharedIdleLeft;
     }
 
+    /// Încărcare imagini partajate
     private void loadSharedImages() {
-        //System.out.println("111111111");
         try {
-
             for (int i = 0; i < 10; i++) {
                 sharedLeftRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/King/King_run_left_" + i + ".png"));
                 sharedRightRunning[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/King/King_run_right_" + i + ".png"));
@@ -64,11 +64,9 @@ public class Enemylvl5 extends Entity{
                 sharedRightAttack[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/King/King_attack_right_" + i + ".png"));
                 sharedLeftDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/King/King_die_left_" + i + ".png"));
                 sharedRightDie[i] = ImageIO.read(getClass().getResource("/Characters/Enemy5/King/King_die_right_" + i + ".png"));
-
             }
             sharedIdleRight = ImageIO.read(getClass().getResource("/Characters/Enemy5/King/King_idle_right.png"));
             sharedIdleLeft = ImageIO.read(getClass().getResource("/Characters/Enemy5/King/King_idle_left.png"));
-
             imagesLoaded = true;
             System.out.println("Imaginile Enemy1 au fost încărcate o singură dată.");
         } catch (IOException e) {
@@ -76,23 +74,13 @@ public class Enemylvl5 extends Entity{
         }
     }
 
-    private void loadHeartImages() {
-        try {
-            fullHeart = ImageIO.read(getClass().getResource("/heart/Full.png"));
-            halfHeart = ImageIO.read(getClass().getResource("/heart/Half.png"));
-            emptyHeart = ImageIO.read(getClass().getResource("/heart/Empty.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public int getHealth() {
         return health;
-    }
+    } /// Getter pentru sănătate
 
+    /// Metodă pentru a aplica daune inamicului
     public void takeDamage(double amount) {
         health -= amount;
-        System.out.println("damage_enemy" + health);
         if (health <= 0) {
             health = 0;
             isDying =true;
@@ -101,14 +89,13 @@ public class Enemylvl5 extends Entity{
     public boolean getIsAttacking()
     {
         return isAttacking;
-    }
+    } /// Returnează dacă inamicul atacă
 
+    /// Actualizează logica inamicului (mișcare, atac, moarte)
     public void update(int xPlayer, int yPlayer, int screenWidth, int screenHeight) {
-        if(isDead){
-            return;
-        }
+        if(isDead){ return;  }
+        // Animație de moarte
         if(isDying){
-            System.out.println("is dying!!!");
             dieFrame++;
             if (dieFrame >= 10) {
                 dieFrame = 9;
@@ -118,53 +105,41 @@ public class Enemylvl5 extends Entity{
             return;
         }
         // calculam distanta dintre centrul axelor celor 2 caractere din cauza diferentei de marime
-
         int centerXEnemy = this.x + this.width / 2;
         int centerYEnemy = this.y + this.height / 2;
         int centerXPlayer = xPlayer + 200 / 2;
         int centerYPlayer = yPlayer + 140 / 2;
-
+        // Calculează distanța față de jucător
         int distanceX = centerXEnemy - centerXPlayer;
         int distanceY = centerYEnemy - centerYPlayer ;
-
+        // Mișcare orizontală către jucător
         if (Math.abs(distanceX) > 20) {
-            if (distanceX > 0) {
-                direction = "left";
-                x -= speed;
-            } else {
-                direction = "right";
-                x += speed;
-            }
+            if (distanceX > 0) { direction = "left"; x -= speed;
+            } else { direction = "right";  x += speed; }
             isMoving = true;
         }
-
+        // Mișcare verticală către jucător
         if (Math.abs(distanceY) > 20) {
-            if (distanceY > 0) {
-                y -= speed;
-            } else {
-                y += speed;
-            }
+            if (distanceY > 0) { y -= speed;
+            } else { y += speed; }
             isMoving = true;
         }
-
+        // Atacă dacă este suficient de aproape de jucător
         isAttacking = Math.abs(distanceX) < 50 && Math.abs(distanceY) < 50;
-
+        // Actualizare frame pentru animație
         if (isAttacking) {
             attackFrame++;
-            if (attackFrame >= 10) {
-                attackFrame = 0;
-            }
+            if (attackFrame >= 10) { attackFrame = 0; }
         } else if (isMoving) {
             frame++;
-            if (frame >= 10) {
-                frame = 0;
-            }
+            if (frame >= 10) { frame = 0; }
         }
-
     }
 
+    /// Desenează inamicul pe ecran
     public void draw(Graphics g) {
         BufferedImage image = null;
+        // Selectează imaginea corespunzătoare stării inamicului
         if(isDying){
             if(direction.equals("right")){
                 image = rightDie[dieFrame];
@@ -192,8 +167,8 @@ public class Enemylvl5 extends Entity{
                 image = idle_left;
             }
         }
+        // Desenează inamicul
         g.drawImage(image,x,y,width,height,null);
-
 
         // === Desenare Health Bar ===
         int barWidth = 100;
@@ -216,9 +191,6 @@ public class Enemylvl5 extends Entity{
         // Contur negru
         g.setColor(Color.BLACK);
         g.drawRect(barX, barY, barWidth, barHeight);
-
-
-
     }
 }
 

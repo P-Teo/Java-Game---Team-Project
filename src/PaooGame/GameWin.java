@@ -3,17 +3,24 @@ package PaooGame;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Clasa GameWin este responsabilă pentru interfața grafică afișată atunci când jucătorul câștigă jocul.
+ * Afișează scorul final, numărul de stele obținut, permite introducerea numelui jucătorului și salvarea rezultatului.
+ */
+
 public class GameWin {
     private Game game;
     private JPanel menuPanel;
-    private JButton scoreBtn;
-    private JButton starBtn;
+    private JButton scoreBtn;   //buton scor
+    private JButton starBtn;    //buton stele
 
+    /// Constructor
     public GameWin(Game game) {
         this.game = game;
-        createUI();
+        createUI(); // Inițializează interfața
     }
 
+    /// Creează și configurează interfața grafică pentru ecranul de câștig.
     private void createUI() {
         menuPanel = new JPanel(new BorderLayout());
         menuPanel.setOpaque(false);
@@ -38,7 +45,7 @@ public class GameWin {
         topPanel.add(mesajBtn);
         backgroundLabel.add(topPanel, BorderLayout.NORTH);
 
-        // === JOS: butoane separate în stânga și dreapta ===
+        // === JOS: butoane separate în stânga și dreapta (scor, stele, acasă, ieșire) ===
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
 
@@ -123,12 +130,13 @@ public class GameWin {
         });
 
 
-        // Funcționalitate butoane
+        /// Funcționalitate butoane
         homeBtn.addActionListener(e -> game.setState(GameState.START_MENU));
         exitBtn.addActionListener(e -> System.exit(0));
 
     }
 
+    ///Creează un buton cu imagine, text și stil personalizat.
     private JButton createImageButton(String imagePath, int width, int height, String text, int x) {
         ImageIcon originalIcon = new ImageIcon(imagePath);
         Image scaledImage = originalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
@@ -155,6 +163,7 @@ public class GameWin {
         return button;
     }
 
+    /// Afișează panoul GameWin pe ecran și actualizează scorul și stelele.
     public void show() {
         int scorTotal=game.getTotalScore();
         scoreBtn.setText("SCOR: " + scorTotal);
@@ -165,6 +174,7 @@ public class GameWin {
         }
         starBtn.setText("STELE: " + steleTotal);
 
+        // Înlocuiește conținutul ferestrei cu meniul GameWin
         JFrame frame = game.getWnd().getFrame();
         frame.getContentPane().removeAll();
         frame.getContentPane().add(menuPanel);
@@ -172,6 +182,7 @@ public class GameWin {
         frame.repaint();
     }
 
+    /// Ascunde panoul GameWin
     public void hide() {
         menuPanel.setVisible(false);
     }

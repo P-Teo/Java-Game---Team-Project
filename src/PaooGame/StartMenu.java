@@ -4,26 +4,36 @@ import java.util.Map;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Clasa StartMenu este responsabilă pentru afișarea meniului principal al jocului.
+ * Oferă opțiuni precum: Joc Nou, Continuare, Scoruri, Informații și Ieșire.
+ * Include un fundal personalizat, un titlu vizual atractiv și butoane interactive
+ * care permit navigarea către diverse stări ale jocului.
+ * Interacțiunea cu baza de date este folosită pentru a continua un joc salvat
+ * sau pentru a încărca clasamentul cu cele mai bune scoruri.
+ */
+
 public class StartMenu {
     private Game game;
     private JPanel menuPanel;
 
+    /// Constructor - primește instanța jocului și creează UI-ul
     public StartMenu(Game game) {
         if (game == null) {
             throw new IllegalArgumentException("Game instance cannot be null.");
         }
         this.game = game;
-        createUI();
+        createUI(); // Inițializare UI
     }
 
+    /// Creează interfața grafică a meniului
     private void createUI() {
-
         // Creăm un panou pentru meniul start
         menuPanel = new JPanel();
         menuPanel.setLayout(new BorderLayout());
         menuPanel.setOpaque(false);   // Panou transparent
 
-        // 1. Adaugă imaginea de fundal redimensionată
+        /// 1. Adaugă imaginea de fundal redimensionată
         String imagePath = "res/Start_Menu.png";  // Calea fișierului de imagine
         ImageIcon originalIcon = new ImageIcon(imagePath);
 
@@ -38,9 +48,7 @@ public class StartMenu {
         // Adaugă imaginea redimensionată ca fundal în fereastră
         menuPanel.add(backgroundLabel, BorderLayout.CENTER);
 
-        //setam scris
-
-        // 2. Adăugăm textul peste imagine (centrat pe fundal)
+        /// 2. Adăugăm textul peste imagine (centrat pe fundal)
         JLabel titleLabel1 = new JLabel("Prințesa Războinică și");
         titleLabel1.setForeground(new Color(255, 180, 20)); // Portocaliu auriu
         titleLabel1.setFont(new Font("Georgia", Font.BOLD, 28));
@@ -49,51 +57,44 @@ public class StartMenu {
         titleLabel2.setForeground(new Color(255, 180, 20)); // Portocaliu auriu
         titleLabel2.setFont(new Font("Georgia", Font.BOLD, 28));
 
-// 2. Setăm textul pentru titlu
+        // Setăm textul pentru titlu
         JPanel textPanel = new JPanel(new GridBagLayout());
         textPanel.setOpaque(false); // Transparent
 
-// Configurare GridBagConstraints pentru centrare
+        // Configurare GridBagConstraints pentru centrare
         GridBagConstraints gbcx1 = new GridBagConstraints();
         gbcx1.gridwidth = GridBagConstraints.REMAINDER;
         gbcx1.anchor = GridBagConstraints.CENTER;
         gbcx1.insets = new Insets(45, 0, 5, 450); // Spațiu între linii
-
         textPanel.add(titleLabel1, gbcx1);
-
 
         GridBagConstraints gbcx2 = new GridBagConstraints();
         gbcx2.gridwidth = GridBagConstraints.REMAINDER;
         gbcx2.anchor = GridBagConstraints.CENTER;
         gbcx2.insets = new Insets(10, 0, 0, 460); // Spațiu între linii
-
         textPanel.add(titleLabel2, gbcx2);
 
-// Adăugăm panoul cu text peste fundal
-
+        // Adăugăm panoul cu text peste fundal
         backgroundLabel.add(textPanel, BorderLayout.NORTH);
 
 
-        // 2. Panou pentru butoane (transparent)
+        /// 3. Panou pentru butoane (transparent)
         JPanel buttonPanel = new JPanel(new GridBagLayout());  // Folosim GridBagLayout pentru a alinia butoanele
         buttonPanel.setOpaque(false);
 
         // Setări pentru alinierea la dreapta
-
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0; // Colona unde vor fi plasate butoanele
         gbc.gridy = 0; // Linia în care va apărea fiecare buton
         gbc.anchor = GridBagConstraints.NORTH; // Aliniere la dreapta
         gbc.insets = new Insets(15, 645, 10, 16);  // Margini între butoane
 
-        //butoane
+        //creăm butoane
         JButton newGameBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "JOC NOU");
         JButton continueBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "CONTINUARE");
         JButton scoresBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "SCORURI");
         JButton exitBtn = createImageButton("res/butoane/Untitled.png", 240, 50, "IEȘIRE");
         JButton infoBtn = createImageButton("res/butoane/Informatii.png", 50, 50);
-        /// JButton settingsBtn = createImageButton("butoane/Setari.png",50,50);
-
 
         // Adăugare butoane în panou
         buttonPanel.add(newGameBtn, gbc);
@@ -108,9 +109,11 @@ public class StartMenu {
         buttonPanel.add(infoBtn, gbc);
         gbc.gridy++;
 
+        // Adăugăm panoul cu butoane peste fundal
         backgroundLabel.add(buttonPanel, BorderLayout.WEST);
 
-        // Funcționalitate
+        /// Funcționalitate butoane
+        // Butonul de joc nou - resetează jocul
         newGameBtn.addActionListener(e -> {
             game.nrLevel = 1;
             game.setTotalScore (0);
@@ -118,34 +121,27 @@ public class StartMenu {
             for (int i = 0; i < stars.length; i++) {
                 stars[i] = 0;
             }
-           /// game.getDb().resetScores(); // Șterge scorurile din baza de date
             game.reset();
             game.setState(GameState.LEVEL_SELECT);
 
         });
 
+        // Buton continuare joc - încarcă nivelul și scorurile salvate
         continueBtn.addActionListener(e -> {
             int lastLevel = game.getDb().loadCurrentLevel(); // citește nivelul salvat
-            System.out.println("levvvvvvvvvv " + lastLevel);
 
             if (lastLevel < 1 || lastLevel>=6) {
                 JOptionPane.showMessageDialog(null, "Nu ai joc început. Începe joc nou!");
             } else {
                 game.nrLevel = lastLevel; // setează nivelul curent
                 Map<Integer, Integer> scores = game.getDb().loadAllScores(); // încarcă scorurile
-                // Afișare scoruri per nivel în consolă
-                System.out.println("Scorurile încărcate pe niveluri:");
-                for (Map.Entry<Integer, Integer> entry : scores.entrySet()) {
-                    System.out.println("Nivel " + entry.getKey() + ": " + entry.getValue());
-                }
                 int totalScore = scores.values().stream().mapToInt(Integer::intValue).sum();
                 game.setTotalScore(totalScore);
                 game.setState(GameState.LEVEL_SELECT);
             }
         });
 
-
-
+        // Buton scoruri - afișează top 10 scoruri într-o fereastră
         scoresBtn.addActionListener(e -> {
             DatabaseManager db = new DatabaseManager();
             java.util.List<String[]> topScores = db.getTopScores(); // Nume, scor, stele
@@ -178,20 +174,20 @@ public class StartMenu {
                     scorePanel.add(Box.createVerticalStrut(5));
                 }
             }
-
             JOptionPane.showMessageDialog(null, scorePanel, "Clasament", JOptionPane.PLAIN_MESSAGE);
         });
 
 
-
+        // Buton informații - afișează un mesaj cu autorii
         infoBtn.addActionListener(e -> {
             JOptionPane.showMessageDialog(null, "Joc dezvoltat de Papă Teodora și Maria Condurache\nVersiunea 1.0\nToate drepturile rezervate.");
         });
 
+        // Buton ieșire - închide aplicația
         exitBtn.addActionListener(e -> System.exit(0));
     }
 
-    //creeare butoane
+    /// Metodă auxiliară pentru crearea butonului fără text
     private JButton createImageButton(String path, int width, int height) {
         ImageIcon originalIcon = new ImageIcon(path);
         Image scaledImage = originalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
@@ -207,6 +203,7 @@ public class StartMenu {
         return button;
     }
 
+    /// Metodă pentru butoane cu imagine și text
     private JButton createImageButton(String imagePath, int width, int height, String text) {
         ImageIcon originalIcon = new ImageIcon(imagePath);
         Image scaledImage = originalIcon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
@@ -226,16 +223,18 @@ public class StartMenu {
         return button;
     }
 
+    /// Afișează meniul în fereastra principală
     public void show() {
-        JFrame frame = game.getWnd().getFrame(); // You'll need to add this method to GameWindow
+        JFrame frame = game.getWnd().getFrame();
         frame.getContentPane().removeAll();
         frame.getContentPane().add(menuPanel);
         frame.revalidate();
         frame.repaint();
          }
+
+    /// Ascunde panoul meniului
     public void hide() {
-        menuPanel.setVisible(false); // Ascunde panoul meniului
-    }
+        menuPanel.setVisible(false);}
 
 
 }

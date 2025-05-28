@@ -18,51 +18,51 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList; // Importă ArrayList și List
 
+/// extinde clasa Level pentru a face nivelul 4
 
 public class Level4 extends Level {
-    private Player player;
+    private Player player; //personajul controlat de jucător
     private Game game;
-    private Level4Background background;
+    private Level4Background background; // fundalul nivelului
     private GameWindow wnd;
     private Image messageImage;
     private boolean showMessage;
-    private boolean levelCompleted;
-    private boolean gameOver;
     int maxEnemies = 8;
     int maxNowEnemies;
-    List<Enemylvl4> enemies = new ArrayList<>();
-    List<Enemylvl4_last> enemies2 = new ArrayList<>();
+    List<Enemylvl4> enemies = new ArrayList<>(); // lista inamicilor activi din nivel
+    List<Enemylvl4_last> enemies2 = new ArrayList<>(); // lista inamicilor activi din nivel
     int currentEnemyIndex = 0;
     private boolean previousAttackState = false;
     private Rectangle continueButtonBounds = new Rectangle(650, 350, 50, 50); // Poziția și dimensiunea butonului de continuare
     private boolean showLevelCompleteMessage = false;
+    //scorul și stelele câștigate de jucător
     private int score = 0;
     private int star=0;
     private int maxPlayerX = 0;
     private int okk = 0;
+    //variabile care controlează stările jocului.
     private long startTime;
     private long levelCompleteTime;
+    private boolean levelCompleted;
+    private boolean gameOver;
+    private boolean isPaused = false;
+    //castelele afișate în fundal
     private final Castle1 castle1;
     private final Castle1 castle2;
-
-
     private  List<TrapObject> traps = new ArrayList<>();
     private int maxTraps = 10;
-
-    // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
-    private List<Point> princessPath = new ArrayList<>();
-    private boolean isPaused = false;
+    private List<Point> princessPath = new ArrayList<>(); // Lista pentru a stoca pozițiile prințesei pe care le vom desena pe mini-harta
     private Rectangle pauseButtonBounds = new Rectangle(930, 8, 50, 50);
     private Rectangle resumeButtonBounds = new Rectangle(780, 530, 200, 50); // Poziția și dimensiunea butonului de reluare
     private boolean lastEnemies = false;
 
+    /// constructorul clasei
     public Level4(Game game,GameWindow wnd) {
         this.game = game;
         this.wnd = wnd;
         maxNowEnemies=maxEnemies;
         loadAssets();
-        score=0;
-        star=0;
+        score=0;  star=0;
         okk=0;
         player = new Player();
         background = new Level4Background();
@@ -70,83 +70,42 @@ public class Level4 extends Level {
         levelCompleted = false;
         gameOver = false;
         startTime = System.currentTimeMillis();
-        /*for(int i = 0; i < maxEnemies; i++){
-            enemyPool.add(new Enemylvl4());
-        }*/
         castle1 = new Castle1(20,150,300,100, "/BackgroundCastle/Castle7.png");
         castle2 = new Castle1(background.getWidth()-200,200,250,300,"/BackgroundCastle/Castle8.png");
-
         for(int i=0;i<maxTraps;i++){
-
             // Distribuire uniformă pe orizontală
             int spacing = background.getWidth() / (maxTraps + 1); // +1 pentru spațiere la margini
             int trap_x = spacing * (i + 1); // evită capetele absolute (0 și 4700)
-
-            // Random pe verticală între 140 și 520
-            int trap_y = 180 + (int)(Math.random() * (500 - 180));
-
+            int trap_y = 180 + (int)(Math.random() * (500 - 180)); // Random pe verticală între 140 și 520
             traps.add(new TrapObject(trap_x,trap_y,50,50,"/Rocks_Traps/Rock3.png"));
         }
-
     }
 
+    /// Se ocupă cu logica de joc:
     public void update(boolean left, boolean right, boolean up, boolean down, boolean attack, int wndWidth, int wndHeight) {
-
-        if (isPaused) {
-            return; // Dacă jocul este în pauză, nu actualizăm nimic
-        }
-
+        if (isPaused) { return; /* Dacă jocul este în pauză, nu actualizăm nimic */ }
         background.update(left, right, wndWidth);
-        if (!showMessage && !gameOver && !levelCompleted) {
-            player.update(left, right, up, down, attack, wndWidth, wndHeight, background.getX());
-        }
-
-
+        if (!showMessage && !gameOver && !levelCompleted) { player.update(left, right, up, down, attack, wndWidth, wndHeight, background.getX()); }
         // Actualizează traseul prințesei
         int absoluteX = -background.getX() + player.x;
         princessPath.add(new Point(absoluteX, player.y));
-
         // Spawn-uieste inamicii în continuare
-        for(TrapObject trap : traps ){
-            if(trap.areEntitiesColliding(player, absoluteX)){
-                player.takeDamage(trap.getDamage());
-            }}
-
-
+        for(TrapObject trap : traps ){ if(trap.areEntitiesColliding(player, absoluteX)){ player.takeDamage(trap.getDamage()); }}
         while (currentEnemyIndex < maxEnemies && absoluteX > 500 + currentEnemyIndex * 380) {
             Enemylvl4 newEnemy =new Enemylvl4();
-
             // Poziții random pe Y între 100 și 500
             int randomY = 100 + (int) (Math.random() * 400);
             newEnemy.y = randomY;
-
-            // Alternăm spawn-ul: unii din stânga, unii din dreapta
-            if (currentEnemyIndex % 3 == 0) {
-                newEnemy.x = -newEnemy.width - 10; // din stânga
-            } else {
-                newEnemy.x = wndWidth + 10; // din dreapta
-            }
-
-            System.out.println("Inamic nou: X = " + newEnemy.x + ", Y = " + newEnemy.y);
+            if (currentEnemyIndex % 3 == 0) { newEnemy.x = -newEnemy.width - 10; } else { newEnemy.x = wndWidth + 10; }// Alternăm spawn-ul: unii din stânga, unii din dreapta
             enemies.add(newEnemy);
-            System.out.println(enemies.size());
             currentEnemyIndex++;
         }
         // Înainte de eliminarea inamicilor
         for (Enemylvl4 enemy : enemies) {
             enemy.update(player.x, player.y, wndWidth, wndHeight);
-
-            // Dacă inamicul e în range și atacă, lovește jucătorul
-            if (enemy.getIsAttacking() && areEntitiesColliding(player, enemy)) {
-                player.takeDamage(enemy.damage);
-            }
-
-            // Dacă jucătorul atacă și e aproape, lovește inamicul
-            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) {
-                enemy.takeDamage(player.damage);
-            }
+            if (enemy.getIsAttacking() && areEntitiesColliding(player, enemy)) { player.takeDamage(enemy.damage); } // Dacă inamicul e în range și atacă, lovește jucătorul
+            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) { enemy.takeDamage(player.damage); } // Dacă jucătorul atacă și e aproape, lovește inamicul
         }
-
 
         if (!showMessage && !levelCompleted && !gameOver) {
             if (maxNowEnemies == 0 && enemies.isEmpty()&& absoluteX>=4670) {
@@ -156,149 +115,81 @@ public class Level4 extends Level {
             }
         }
 
-        if (player.isDead ) {
-            gameOver = true;
-        }
-
-        // Elimină inamicii uciși
+        if (player.isDead ) { gameOver = true; }
         enemies.removeIf(e -> {
-            if (e.isDead) {
-                maxNowEnemies--;
-                return true;
-            }
+            if (e.isDead) { maxNowEnemies--; return true; } // Elimină inamicii uciși
             return false;
         });
         if (maxNowEnemies == 0 && !lastEnemies) {
-            // De exemplu, folosim o altă clasă de inamic: BossEnemy sau Enemylvl5
             Enemylvl4_last enemy1 = new Enemylvl4_last();
             Enemylvl4_last enemy2 = new Enemylvl4_last();
-
             // Setăm poziții diferite pentru fiecare
             enemy1.x =  -enemy1.width - 100;;
             enemy1.y = 300;
-
             enemy2.x =  wndWidth + 10;
             enemy2.y = 300;
-
             enemies2.add(enemy1);
             enemies2.add(enemy2);
-
             maxNowEnemies += 2;
             lastEnemies = true; // variabilă de control ca să nu se repete spawn-ul
         }
         for (Enemylvl4_last enemy : enemies2) {
             enemy.update(player.x, player.y, wndWidth, wndHeight);
-
-            // Dacă inamicul e în range și atacă, lovește jucătorul
-            if (enemy.getIsAttacking() && areEntitiesColliding(player, enemy)) {
-                player.takeDamage(enemy.damage);
-            }
-            System.out.println(attack+" "+previousAttackState+ " "+ areEntitiesColliding(player, enemy));
-            // Dacă jucătorul atacă și e aproape, lovește inamicul
-            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) {
-                enemy.takeDamage(player.damage);
-            }
+            if (enemy.getIsAttacking() && areEntitiesColliding(player, enemy)) { player.takeDamage(enemy.damage); } // Dacă inamicul e în range și atacă, lovește jucătorul
+            if (attack && !previousAttackState && areEntitiesColliding(player, enemy)) { enemy.takeDamage(player.damage); } // Dacă jucătorul atacă și e aproape, lovește inamicul
         }
         previousAttackState = attack;
 
         enemies2.removeIf(e -> {
-            if (e.isDead) {
-                maxNowEnemies--;
-                return true;
-            }
+            if (e.isDead) { maxNowEnemies--; return true; }
             return false;
         });
-
-        //actualizeaza scorul
-        if (absoluteX > maxPlayerX) {
-            maxPlayerX = absoluteX;
-            score = maxPlayerX + (maxEnemies - maxNowEnemies) * 300;
-
-        }
+        if (absoluteX > maxPlayerX) { maxPlayerX = absoluteX; score = maxPlayerX + (maxEnemies - maxNowEnemies) * 300; }//actualizeaza scorul
     }
 
-
-
+    /// Desenează pe ecran fundalul, jucătorul, inamicii, harta mică (mini-map) și mesajele (start, pauză, final).
     public void draw(Graphics g) {
-        if (player.getHealth() ==100) {
-            gameOver = false;
-        }
+        if (player.getHealth() ==100) { gameOver = false; }
         Graphics2D g2d = (Graphics2D) g.create();
-        if (background != null && background.getImage() != null) {
-            background.draw(g2d);
-        } else {
-            System.out.println("Background sau imaginea background-ului nu este încărcată corect.");
-        }
-        //background.draw(g2d);
+        if (background != null && background.getImage() != null) { background.draw(g2d);
+        } else { System.out.println("Background sau imaginea background-ului nu este încărcată corect."); }
         if(!showMessage && !gameOver && !levelCompleted)
         {
-            if (!isPaused) {
-                drawPauseButton(g2d);
-            }
-            if (isPaused) {
-                drawPauseMenu(g2d);
-            }
+            if (!isPaused) { drawPauseButton(g2d); }
+            if (isPaused) { drawPauseMenu(g2d); }
         }
         g2d.dispose();
-        //System.out.println("showMessage: " + showMessage);
-        ///System.out.println("gameOver: " + gameOver);
-        ///System.out.println("levelCompleted: " + levelCompleted);
         if (!showMessage && !gameOver && !levelCompleted) {
-
             castle1.draw(g, background.getX());
             castle2.draw(g, background.getX());
-            for(TrapObject trap : traps){
-                trap.draw(g, background.getX());
-            }
-
-
+            for(TrapObject trap : traps){ trap.draw(g, background.getX()); }
             player.draw(g);
             drawScore(g);
             drawMiniMap(g);// Desenarea mini-hărții
-
         }
-
-        if (showMessage) {
-            drawMessage(g);
-        }
-
-        // Desenează inamicii
-        for (Enemylvl4 enemy : enemies) {
-            if(!showMessage){
-                enemy.draw(g);
-            }
-        }
-        for (Enemylvl4_last enemy : enemies2) {
-            if (!showMessage) {
-                enemy.draw(g);
-            }
-        }
-
+        if (showMessage) { drawMessage(g); }
+        for (Enemylvl4 enemy : enemies) { if(!showMessage){ enemy.draw(g); } } // Desenează inamicii
+        for (Enemylvl4_last enemy : enemies2) { if (!showMessage) { enemy.draw(g); } }
         // Afișează mesajul de felicitări
         if (levelCompleted) {
-            System.out.println("Nivel finalizat!");
+
             levelCompleted = true;
             if(okk==0)
             {
-                // Calculează scorul final
+                System.out.println("Nivel finalizat!");
                 levelCompleteTime = System.currentTimeMillis();
                 long timeInSeconds = (levelCompleteTime - startTime) / 1000;
                 int timeBonus = Math.max(0, 10000 - (int)timeInSeconds * 10);
-                score += timeBonus;
-                score +=player.getHealth()*100;
+                score = score + timeBonus + player.getHealth()*100; // Calculează scorul final
                 okk=1;
             }
             game.nrLevel=5;
             drawLevelCompleteMessage(g);
         }
-
-        // Afișează mesajul de Game Over
-        if (gameOver) {
-            game.setState(GameState.GAME_OVER);
-        }
-
+        if (gameOver) { game.setState(GameState.GAME_OVER); } // Afișează mesajul de Game Over
     }
 
+    /// funcție de resteare nivel
     public void reset() {
         startTime = System.currentTimeMillis();
          player = new Player();
@@ -306,148 +197,111 @@ public class Level4 extends Level {
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
-         maxPlayerX = 0;
+        maxPlayerX = 0;
         enemies.clear();
         enemies2.clear();
-        /*enemyPool.clear();
-        // Clear existing enemies in pool
-        for (int i = 0; i < maxEnemies; i++) {
-            enemyPool.add(new Enemylvl4());  // Add new enemies to reach maxEnemies
-        }*/
         maxNowEnemies = maxEnemies;
         currentEnemyIndex = 0;
-        score=0;
-        star=0;
+        score=0; star=0;
         previousAttackState = false;
         princessPath.clear();
         lastEnemies = false;
     }
 
-
+    /// funcție desenare scor
     private void drawScore(Graphics g) {
         String scoreText = "Scor: " + score;
         Font font = new Font("Arial", Font.BOLD, 24);
         g.setFont(font);
         g.setColor(Color.YELLOW);
-
         int x = 20; // Stânga
         int y = wnd.GetWndHeight() - 20; // Jos
-
         g.drawString(scoreText, x, y);
     }
 
-
+    /// desenare nivel complet
     private void drawLevelCompleteMessage(Graphics g) {
         showLevelCompleteMessage = true;
-
         if (messageImage != null) {
             int imageWidth = messageImage.getWidth(null);
             int imageHeight = messageImage.getHeight(null);
-
             int newWidth = imageWidth / 3;
             int newHeight = imageHeight ;
-
             int x = (wnd.GetWndWidth() - newWidth) / 2;
             int y = (wnd.GetWndHeight() - newHeight) / 2;
-
             Graphics2D g2d = (Graphics2D) g.create();
-
-            // Fundal overlay întunecat
-            g2d.setColor(new Color(0, 0, 0, 150));
+            g2d.setColor(new Color(0, 0, 0, 150)); // Fundal overlay întunecat
             g2d.fillRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
-
-            // Imaginea de fundal centrată
-            g2d.drawImage(messageImage, x, y, newWidth, newHeight, null);
-
-            // Textul de felicitări
-            String message = "Felicitări! Ai câștigat!";
+            g2d.drawImage(messageImage, x, y, newWidth, newHeight, null); // Imaginea de fundal centrată
+            String message = "Felicitări! Ai câștigat!"; // Textul de felicitări
             Font font = new Font("Georgia", Font.BOLD, 32);
             g2d.setFont(font);
             FontMetrics metrics = g2d.getFontMetrics(font);
-
             int textX = x + (newWidth - metrics.stringWidth(message)) / 2;
             int textY = y + (newHeight + metrics.getHeight()) / 2 - 20;
-
             g2d.setColor(Color.ORANGE);
             g2d.drawString(message, textX, textY);
-
             // Textul scorului final
             String nrStar = "*".repeat(this.getStar());
             String scoreText = "Scor final: " + score +"   "+nrStar ;
             Font scoreFont = new Font("Georgia", Font.PLAIN, 24);
             g2d.setFont(scoreFont);
             FontMetrics scoreMetrics = g2d.getFontMetrics(scoreFont);
-
             int scoreTextX = x + (newWidth - scoreMetrics.stringWidth(scoreText)) / 2;
             int scoreTextY = textY + scoreMetrics.getHeight() + 10;
-
             g2d.setColor(Color.WHITE);
             g2d.drawString(scoreText, scoreTextX, scoreTextY);
-
-
-
             // Desenează triunghiul (buton de continuare) în interiorul imaginii
             g2d.setColor(Color.ORANGE);
             int triangleCenterX = x + newWidth / 2;
             int triangleBaseY = y + newHeight - 45;
-
             // Desenăm triunghiul cu vârful spre dreapta
-            int[] xPoints = {
-                    triangleCenterX - 20, triangleCenterX - 20, triangleCenterX + 10
-            };
-            int[] yPoints = {
-                    triangleBaseY - 15, triangleBaseY + 15, triangleBaseY
-            };
-
-            // Hitbox pentru click pe triunghi (ajustat la noile coordonate)
-            continueButtonBounds = new Rectangle(triangleCenterX - 20, triangleBaseY - 15, 30, 30);
-
+            int[] xPoints = { triangleCenterX - 20, triangleCenterX - 20, triangleCenterX + 10 };
+            int[] yPoints = { triangleBaseY - 15, triangleBaseY + 15, triangleBaseY };
+            continueButtonBounds = new Rectangle(triangleCenterX - 20, triangleBaseY - 15, 30, 30); // Hitbox pentru click pe triunghi (ajustat la noile coordonate)
             g2d.fillPolygon(xPoints, yPoints, 3);
-
             g2d.dispose();
         }
     }
 
+    /// interacțiune cu utilizatorul
     private boolean isMouseClickedInButton(int mouseX, int mouseY, int buttonX, int buttonY, int width, int height) {
         return mouseX >= buttonX && mouseX <= buttonX + width && mouseY >= buttonY && mouseY <= buttonY + height;
     }
 
+    /// coliziune
     private boolean areEntitiesColliding(Player p, Enemylvl4 e) {
         Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
         Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
         return rectP.intersects(rectE);
     }
+    /// coliziune
     private boolean areEntitiesColliding(Player p, Enemylvl4_last e) {
         Rectangle rectP = new Rectangle(p.x, p.y, p.width, p.height);
         Rectangle rectE = new Rectangle(e.x, e.y, e.width, e.height);
         return rectP.intersects(rectE);
     }
 
+    ///desenez mini harta
     private void drawMiniMap(Graphics g) {
         // Redimensionează fundalul pentru mini-hartă (o versiune mai mică)
         int miniMapWidth = 375; // Lățimea mini-hărții
         int miniMapHeight = (int) (miniMapWidth * ((double) background.getHeight() / background.getWidth())); // Înălțimea mini-hărții
         int miniMapX = 530; // Poziția pe axa X
         int miniMapY = 10; // Poziția pe axa Y
-
-        // Desenează fundalul mini-hărții
-        g.drawImage(background.getImage(), miniMapX, miniMapY, miniMapWidth, miniMapHeight, null);
-
+        g.drawImage(background.getImage(), miniMapX, miniMapY, miniMapWidth, miniMapHeight, null); // Desenează fundalul mini-hărții
         // Scalează pozițiile din coordonatele mari ale jocului pe mini-harta
         double scaleX = (double) miniMapWidth / background.getWidth();
         double scaleY = (double) miniMapHeight / background.getHeight();
-
         // Desenarea traseului prințesei pe mini-hartă
         g.setColor(Color.RED);
         for (int i = 1; i < princessPath.size(); i++) {
             Point p1 = princessPath.get(i - 1);
             Point p2 = princessPath.get(i);
-
             int x1 = (int) (p1.x * scaleX);
             int y1 = (int) (p1.y * scaleY);
             int x2 = (int) (p2.x * scaleX);
             int y2 = (int) (p2.y * scaleY);
-
             g.drawLine(miniMapX + x1, miniMapY + y1, miniMapX + x2, miniMapY + y2);
         }
         // Desenarea poziției curente a prințesei pe mini-hartă
@@ -456,43 +310,31 @@ public class Level4 extends Level {
         int playerMiniMapY = (int) (player.y * scaleY);
         g.setColor(Color.GREEN);
         g.fillRect(miniMapX + playerMiniMapX - 5, miniMapY + playerMiniMapY - 5, 10, 10); // Un pătrat verde pentru jucător
-
         // Desenează chenarul îngroșat
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setColor(Color.ORANGE); // Culoarea chenarului
         g2d.setStroke(new BasicStroke(1)); // Grosimea chenarului
         g2d.drawRect(miniMapX, miniMapY, miniMapWidth, miniMapHeight);
         g2d.dispose();
-
-
     }
 
+    /// încărcare fișiere
     private void loadAssets() {
-        try {
-            messageImage = ImageIO.read(new File("res/butoane/Untitled.png"));
-            System.out.println("Imaginea a fost încărcată cu succes.");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Eroare la încărcarea imaginii!");
-        }
+        try { messageImage = ImageIO.read(new File("res/butoane/Untitled.png")); System.out.println("Imaginea a fost încărcată cu succes.");
+        } catch (IOException e) { e.printStackTrace(); System.out.println("Eroare la încărcarea imaginii!"); }
     }
 
+    /// desenez mesajul de început
     private void drawMessage(Graphics g) {
         if (messageImage != null) {
             int imageWidth = messageImage.getWidth(null);
             int imageHeight = messageImage.getHeight(null);
-
             int newWidth = imageWidth / 3;
             int newHeight = imageHeight / 3;
-
             int x = (wnd.GetWndWidth() - newWidth) / 2;
             int y = (wnd.GetWndHeight() - newHeight) / 2;
-
             Graphics2D g2d = (Graphics2D) g.create();
-
-            // Desenează imaginea redimensionată
-            g2d.drawImage(messageImage, x, y, newWidth, newHeight, null);
-
+            g2d.drawImage(messageImage, x, y, newWidth, newHeight, null); // Desenează imaginea redimensionată
             // Mesaj mic - font mai mic, poziționat mai sus în chenar
             String smallMessage = "Ai grijă la pietre și la cavaleri!";
             Font smallFont = new Font("Georgia", Font.PLAIN, 16);
@@ -500,10 +342,8 @@ public class Level4 extends Level {
             FontMetrics smallMetrics = g2d.getFontMetrics(smallFont);
             int smallTextX = x + (newWidth - smallMetrics.stringWidth(smallMessage)) / 2;
             int smallTextY = y + smallMetrics.getAscent() + 10; // puțin de jos din marginea superioară
-
             g2d.setColor(new Color(255, 215, 0));
             g2d.drawString(smallMessage, smallTextX, smallTextY);
-
             // Mesaj mare - font mai mare, poziționat mai jos în chenar
             String bigMessage = "Începe lupta";
             Font bigFont = new Font("Georgia", Font.BOLD, 24);
@@ -511,117 +351,89 @@ public class Level4 extends Level {
             FontMetrics bigMetrics = g2d.getFontMetrics(bigFont);
             int bigTextX = x + (newWidth - bigMetrics.stringWidth(bigMessage)) / 2;
             int bigTextY = y + newHeight - bigMetrics.getDescent() - 10; // puțin de sus din marginea inferioară
-
             g2d.drawString(bigMessage, bigTextX, bigTextY);
-
             g2d.dispose();
-        } else {
-            System.out.println("Imaginea mesajului este null.");
-        }
+        } else { System.out.println("Imaginea mesajului este null."); }
     }
 
+    /// interacțiunea utilizatorului
     public void mouseClicked(int x, int y) {
-
-        if (isMouseClickedInButton(x, y, pauseButtonBounds.x, pauseButtonBounds.y, pauseButtonBounds.width, pauseButtonBounds.height)) {
-            isPaused = !isPaused;
-        }
-        if (isPaused && isMouseClickedInButton(x, y, resumeButtonBounds.x, resumeButtonBounds.y, resumeButtonBounds.width, resumeButtonBounds.height)) {
-            isPaused = false; // Reluăm jocul
-        }
+        if (isMouseClickedInButton(x, y, pauseButtonBounds.x, pauseButtonBounds.y, pauseButtonBounds.width, pauseButtonBounds.height)) { isPaused = !isPaused; }
+        if (isPaused && isMouseClickedInButton(x, y, resumeButtonBounds.x, resumeButtonBounds.y, resumeButtonBounds.width, resumeButtonBounds.height)) { isPaused = false; }
         if (showMessage && messageImage != null) {
             int imageWidth = messageImage.getWidth(null) / 3;
             int imageHeight = messageImage.getHeight(null) / 3;
             int imgX = (wnd.GetWndWidth() - imageWidth) / 2;
             int imgY = (wnd.GetWndHeight() - imageHeight) / 2;
-
-            if (x >= imgX && x <= imgX + imageWidth && y >= imgY && y <= imgY + imageHeight) {
-                hideMessage();
-            }
+            if (x >= imgX && x <= imgX + imageWidth && y >= imgY && y <= imgY + imageHeight) { hideMessage(); }
         } else if (showLevelCompleteMessage && messageImage != null) {
             int imageWidth = messageImage.getWidth(null) / 3;
             int imageHeight = messageImage.getHeight(null);
             int imgX = (wnd.GetWndWidth() - imageWidth) / 2;
             int imgY = (wnd.GetWndHeight() - imageHeight) / 2;
-
-            if (x >= imgX && x <= imgX + imageWidth && y >= imgY && y <= imgY + imageHeight) {
-                game.setState(GameState.LEVEL_SELECT);
-            }
-        } else {
-            System.out.println("mouse click.");
-        }
+            if (x >= imgX && x <= imgX + imageWidth && y >= imgY && y <= imgY + imageHeight) { game.setState(GameState.LEVEL_SELECT); }
+        } else { System.out.println("mouse click."); }
     }
 
 
     public void hideMessage() {
         showMessage = false;
-    }
+    }///ascund mesajul
+
     public int getScore(){
         return score;
-    }
+    } ///returnează scorul
+
+    /// returnez numărul de stele
     public int getStar()
     {
-        if(score>=24000)
-            star=3;
-        if(score>=21000 && score<24000)
-            star=2;
-        if(score>=18000 && score<21000)
-            star=1;
-        if(score<18000)
-            star=0;
+        if(score>=24000) star=3;
+        if(score>=21000 && score<24000) star=2;
+        if(score>=18000 && score<21000) star=1;
+        if(score<18000) star=0;
         return star;
     }
 
+    /// desenez butonul de pauză
     private void drawPauseButton(Graphics g) {
         g.setColor(Color.BLUE);
         g.fillRect(pauseButtonBounds.x, pauseButtonBounds.y, pauseButtonBounds.width, pauseButtonBounds.height);
-
-        // Desenează chenarul negru
-        g.setColor(Color.BLACK);
+        g.setColor(Color.BLACK); // Desenează chenarul negru
         g.drawRect(pauseButtonBounds.x, pauseButtonBounds.y, pauseButtonBounds.width - 1, pauseButtonBounds.height - 1);
-
         // Desenează simbolul pauză: două bare verticale
         g.setColor(Color.ORANGE);
         Graphics2D g2 = (Graphics2D) g;
         int barWidth = 8;
         int barHeight = 30;
         int spaceBetween = 10;
-
         int bar1X = pauseButtonBounds.x + (pauseButtonBounds.width - 2 * barWidth - spaceBetween) / 2;
         int barY = pauseButtonBounds.y + (pauseButtonBounds.height - barHeight) / 2;
         int bar2X = bar1X + barWidth + spaceBetween;
-
         g2.fillRect(bar1X, barY, barWidth, barHeight); // prima bară
         g2.fillRect(bar2X, barY, barWidth, barHeight); // a doua bară
     }
 
+    /// desenez meniul de pauză
     private void drawPauseMenu(Graphics g) {
-        // Fundal semi-transparent peste ecran
-        g.setColor(new Color(0, 0, 0, 150));
+        g.setColor(new Color(0, 0, 0, 150)); // Fundal semi-transparent peste ecran
         g.fillRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
-
         // Butonul de reluare - fundal albastru
         g.setColor(Color.BLUE);
         g.fillRect(resumeButtonBounds.x, resumeButtonBounds.y, resumeButtonBounds.width, resumeButtonBounds.height);
-
         // Chenar negru
         g.setColor(Color.BLACK);
         g.drawRect(resumeButtonBounds.x, resumeButtonBounds.y, resumeButtonBounds.width - 1, resumeButtonBounds.height - 1);
-
         // Text portocaliu și font setat
         g.setColor(Color.ORANGE);
         Font font = new Font("Arial", Font.BOLD, 20);
         g.setFont(font);
-
         // Centrare aproximativă a textului
         FontMetrics metrics = g.getFontMetrics(font);
         String text = "Reluare joc";
         int textWidth = metrics.stringWidth(text);
         int textHeight = metrics.getHeight();
-
         int textX = resumeButtonBounds.x + (resumeButtonBounds.width - textWidth) / 2;
         int textY = resumeButtonBounds.y + (resumeButtonBounds.height + textHeight) / 2 - metrics.getDescent();
-
         g.drawString(text, textX, textY);
     }
-
 }
