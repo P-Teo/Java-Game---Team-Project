@@ -2,14 +2,13 @@ package PaooGame.Levels;
 
 
 import PaooGame.Castle.Castle1;
-import PaooGame.Entity.Enemylvl1;
 import PaooGame.Entity.Enemylvl3;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Level3Background;
-import PaooGame.TrapObject;
+import PaooGame.Object.TrapObject;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

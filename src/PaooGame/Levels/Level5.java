@@ -2,7 +2,7 @@ package PaooGame.Levels;
 
 
 import PaooGame.Entity.Enemylvl5;
-import PaooGame.Entity.StarFinal;
+import PaooGame.Object.StarFinal;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
@@ -178,19 +178,7 @@ public class Level5 extends Level {
         } else {
             System.out.println("Background sau imaginea background-ului nu este încărcată corect.");
         }
-        //background.draw(g2d);
-        if(!showMessage && !gameOver && !levelCompleted)
-        {
-            if (!isPaused) {
-                drawPauseButton(g2d);
-            }
-            if (isPaused) {
-                drawPauseMenu(g2d);
-            }
-        }
 
-
-        g2d.dispose();
         for (StarFinal starFinal : starsFinal) {
             starFinal.draw(g);
         }
@@ -201,7 +189,6 @@ public class Level5 extends Level {
 
             player.draw(g);
             drawScore(g);
-
 
         }
 
@@ -218,6 +205,19 @@ public class Level5 extends Level {
         if (!showMessage && !gameOver && !levelCompleted && !isPaused) {
             drawFogOfWar(g);
         }
+        //background.draw(g2d);
+        if(!showMessage && !gameOver && !levelCompleted)
+        {
+            if (!isPaused) {
+                drawPauseButton(g2d);
+            }
+            if (isPaused) {
+                drawPauseMenu(g2d);
+            }
+        }
+
+
+        g2d.dispose();
         // Afișează mesajul de felicitări
         if (levelCompleted) {
             game.getDb().saveLevelScore(game.nrLevel+1, score);
@@ -523,25 +523,29 @@ public class Level5 extends Level {
         BufferedImage fog = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D fogGraphics = fog.createGraphics();
 
-        // 🔧 Activează anti-aliasing pentru cercul tăiat
         fogGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Întunecă tot ecranul
         fogGraphics.setColor(new Color(0, 0, 0, 220));
         fogGraphics.fillRect(0, 0, screenWidth, screenHeight);
 
-        // Face zona din jurul prințesei clară
+        // Zona vizibilă din jurul jucătorului
         int radius = 100;
         int centerX = player.x - background.getX() + player.width / 2;
         int centerY = player.y + player.height / 2;
 
-        // Creează un cerc transparent (zona "vizibilă")
         fogGraphics.setComposite(AlphaComposite.Clear);
         fogGraphics.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
 
+        //  Zona de sus pentru inimi – ocolire ceață
+        int heartClearX = 10;    // sau 0
+        int heartClearY = 10;
+        int heartClearWidth = 160;  // destul pentru 3 inimi + spațiu
+        int heartClearHeight = 60;
+        fogGraphics.fillRect(heartClearX, heartClearY, heartClearWidth, heartClearHeight);
+
         fogGraphics.dispose();
 
-        // Desenează ceața peste tot
         g2d.drawImage(fog, 0, 0, null);
         g2d.dispose();
     }

@@ -1,4 +1,4 @@
-package PaooGame;
+package PaooGame.Object;
 
 
 import PaooGame.Entity.Player;
@@ -8,7 +8,6 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class TrapObject {
     int x;

@@ -29,7 +29,7 @@ public class Enemylvl4  extends Entity{
         width = 150;
         height = 120;
         health = 15;
-        damage = 0.002;
+        damage = 0.001;
         direction = "left";
         frame = 0;
         attackFrame = 0;

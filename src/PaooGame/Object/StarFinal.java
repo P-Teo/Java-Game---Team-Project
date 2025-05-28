@@ -1,4 +1,4 @@
-package PaooGame.Entity;
+package PaooGame.Object;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
