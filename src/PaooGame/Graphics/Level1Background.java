@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Level1Background {
+public class Level1Background extends LevelBackground{
     private BufferedImage image;
     private int x = 0;
 

@@ -1,21 +1,14 @@
 package PaooGame.Graphics;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
-public class Level3Background extends LevelBackground{
-    private BufferedImage image;
-    private int x = 0;
+public abstract class LevelBackground {
+    protected BufferedImage image;
+    protected int x = 0;
 
-
-    public Level3Background() {
-        try {
-            image = ImageIO.read(getClass().getResource("/Background/Backgroundlevel3.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    // Constructorul gol (nu încarcă imaginea)
+    public LevelBackground() {
     }
 
     public void update(boolean moveLeft, boolean moveRight, int screenWidth) {
@@ -27,28 +20,22 @@ public class Level3Background extends LevelBackground{
     }
 
     public void draw(Graphics g) {
-
         g.drawImage(image, x, 0, null);
-
     }
 
-    @Override
     public BufferedImage getImage() {
         return image;
     }
+
     public int getX() {
         return x;
     }
 
-
-    // Returnează lățimea imaginii de fundal
     public int getWidth() {
         return image.getWidth();
     }
 
-    // Returnează înălțimea imaginii de fundal
     public int getHeight() {
         return image.getHeight();
     }
-
 }

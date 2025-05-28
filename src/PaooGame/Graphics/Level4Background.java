@@ -5,7 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class Level4Background {
+public class Level4Background extends LevelBackground{
     private BufferedImage image;
     private int x = 0;
 
@@ -32,6 +32,7 @@ public class Level4Background {
 
     }
 
+    @Override
     public BufferedImage getImage() {
         return image;
     }
