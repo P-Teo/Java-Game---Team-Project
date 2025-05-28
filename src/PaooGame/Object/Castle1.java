@@ -1,4 +1,4 @@
-package PaooGame.Castle;
+package PaooGame.Object;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

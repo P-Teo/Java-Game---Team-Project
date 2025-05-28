@@ -1,7 +1,7 @@
 package PaooGame.Levels;
 
 
-import PaooGame.Castle.Castle1;
+import PaooGame.Object.Castle1;
 import PaooGame.Entity.Enemylvl4;
 import PaooGame.Entity.Enemylvl4_last;
 import PaooGame.Entity.Player;
