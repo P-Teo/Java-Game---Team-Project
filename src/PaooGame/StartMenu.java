@@ -135,7 +135,11 @@ public class StartMenu {
             } else {
                 game.nrLevel = lastLevel; // setează nivelul curent
                 Map<Integer, Integer> scores = game.getDb().loadAllScores(); // încarcă scorurile
-                int totalScore = scores.values().stream().mapToInt(Integer::intValue).sum();
+                // Calculează scorul total DOAR până la nivelul curent
+                int totalScore = scores.entrySet().stream()
+                        .filter(entry -> entry.getKey() <= lastLevel)
+                        .mapToInt(Map.Entry::getValue)
+                        .sum();
                 game.setTotalScore(totalScore);
                 game.setState(GameState.LEVEL_SELECT);
             }
