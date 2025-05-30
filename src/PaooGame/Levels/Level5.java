@@ -172,6 +172,7 @@ public class Level5 extends Level {
         enemiesSpawned=false;
         player.setHealth(500);
         player.speed = 8;
+        starsFinal.clear();
     }
 
     /// funcție desenare scor și număr stele/bile rămase de colecționat
