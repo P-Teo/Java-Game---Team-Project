@@ -1,7 +1,8 @@
 package PaooGame;
 
-import PaooGame.Levels.*;
 import PaooGame.GameWindow.GameWindow;
+import PaooGame.Levels.*;
+
 import PaooGame.Graphics.Assets;
 
 import java.awt.*;

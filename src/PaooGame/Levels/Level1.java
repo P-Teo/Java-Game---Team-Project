@@ -1,5 +1,7 @@
 package PaooGame.Levels;
 
+import PaooGame.Graphics.LevelBackground;
+import PaooGame.Graphics.LevelBackgroundFactory;
 import PaooGame.Object.Castle1;
 import PaooGame.Entity.Enemylvl1;
 import PaooGame.Entity.Player;
@@ -20,7 +22,7 @@ import java.util.ArrayList; // Importă ArrayList și List
 public class Level1 extends Level {
     private Player player; //personajul controlat de jucător
     private Game game;
-    private Level1Background background; // fundalul nivelului
+    private LevelBackground background; // fundalul nivelului
     private GameWindow wnd;
     private Image messageImage;
     int maxEnemies = 12;
@@ -56,7 +58,7 @@ public class Level1 extends Level {
         maxNowEnemies=maxEnemies;
         loadAssets();
         player = new Player();
-        background = new Level1Background();
+        background = LevelBackgroundFactory.createLevelBackground(1);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -142,7 +144,7 @@ public class Level1 extends Level {
     public void reset() {
         startTime = System.currentTimeMillis();
         player = new Player();
-        background = new Level1Background();
+        background = LevelBackgroundFactory.createLevelBackground(1);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;

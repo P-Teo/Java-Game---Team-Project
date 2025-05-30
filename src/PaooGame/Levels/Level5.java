@@ -2,12 +2,13 @@ package PaooGame.Levels;
 
 
 import PaooGame.Entity.Enemylvl5;
+import PaooGame.Graphics.LevelBackgroundFactory;
 import PaooGame.Object.StarFinal;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
-import PaooGame.Graphics.Level5Background;
+import PaooGame.Graphics.LevelBackground;
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
@@ -22,7 +23,7 @@ import java.util.ArrayList; // Importă ArrayList și List
 public class Level5 extends Level {
     private Player player; //personajul controlat de jucător
     private Game game;
-    private Level5Background background; // fundalul nivelului
+    private LevelBackground background; // fundalul nivelului
     private GameWindow wnd;
     private Image messageImage;
     private boolean showMessage;
@@ -57,7 +58,7 @@ public class Level5 extends Level {
         loadAssets();
         score=0; star=0;
         player = new Player();
-        background = new Level5Background();
+        background = LevelBackgroundFactory.createLevelBackground(5);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -158,7 +159,7 @@ public class Level5 extends Level {
     public void reset() {
         startTime = System.currentTimeMillis();
          player = new Player();
-        background = new Level5Background();
+        background = LevelBackgroundFactory.createLevelBackground(5);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
