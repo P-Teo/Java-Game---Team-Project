@@ -2,13 +2,13 @@ package PaooGame.Levels;
 
 
 import PaooGame.Entity.Enemylvl5;
-import PaooGame.Graphics.LevelBackgroundFactory;
 import PaooGame.Object.StarFinal;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
 import PaooGame.GameState;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.LevelBackground;
+
 import java.awt.image.BufferedImage;
 
 import javax.imageio.ImageIO;
@@ -58,7 +58,7 @@ public class Level5 extends Level {
         loadAssets();
         score=0; star=0;
         player = new Player();
-        background = LevelBackgroundFactory.createLevelBackground(5);
+        background = new LevelBackground(5);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -159,7 +159,7 @@ public class Level5 extends Level {
     public void reset() {
         startTime = System.currentTimeMillis();
          player = new Player();
-        background = LevelBackgroundFactory.createLevelBackground(5);
+        background = new LevelBackground(5);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -179,6 +179,7 @@ public class Level5 extends Level {
                 {200, 200}, {800, 270}, {400, 450}, {150, 450}, {700, 450},
                 {300, 300}, {800, 430}, {400, 200}, {600, 380}, {500, 250}
         };
+        collectedStarsCount =0;
         for (int[] pos : positions) {
             starsFinal.add(new StarFinal(pos[0], pos[1]));
         }
@@ -313,8 +314,7 @@ public class Level5 extends Level {
         } else { System.out.println("mouse click."); }
     }
 
-    public void hideMessage() {
-        showMessage = false;
+    public void hideMessage() { showMessage = false;
     } ///ascund mesajul
 
     public int getScore(){

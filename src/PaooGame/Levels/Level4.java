@@ -1,7 +1,6 @@
 package PaooGame.Levels;
 
 
-import PaooGame.Graphics.LevelBackgroundFactory;
 import PaooGame.Object.Castle1;
 import PaooGame.Entity.Enemylvl4;
 import PaooGame.Entity.Enemylvl4_last;
@@ -66,7 +65,7 @@ public class Level4 extends Level {
         score=0;  star=0;
         okk=0;
         player = new Player();
-        background = LevelBackgroundFactory.createLevelBackground(4);
+        background = new LevelBackground(4);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -194,7 +193,7 @@ public class Level4 extends Level {
     public void reset() {
         startTime = System.currentTimeMillis();
          player = new Player();
-        background = LevelBackgroundFactory.createLevelBackground(4);
+        background = new LevelBackground(4);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -389,9 +388,9 @@ public class Level4 extends Level {
     public int getStar()
     {
         if(score>=24000) star=3;
-        if(score>=21000 && score<24000) star=2;
-        if(score>=18000 && score<21000) star=1;
-        if(score<18000) star=0;
+        if(score>=16000 && score<24000) star=2;
+        if(score>=7000 && score<16000) star=1;
+        if(score<7000) star=0;
         return star;
     }
 

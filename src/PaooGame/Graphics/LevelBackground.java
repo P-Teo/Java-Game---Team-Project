@@ -2,19 +2,28 @@ package PaooGame.Graphics;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
+import javax.imageio.ImageIO;
+import java.io.IOException;
 /**
  * Clasa abstractă LevelBackground definește comportamentul comun
  * pentru fundalurile nivelelor din joc.
  * Aceasta oferă funcționalitate pentru deplasarea și desenarea fundalului.
  */
 
-public abstract class LevelBackground {
+public class LevelBackground {
     protected BufferedImage image; // Imaginea care reprezintă fundalul nivelului
     protected int x = 0;  // Coordonata X a imaginii pe ecran, folosită pentru efectul de scroll
 
-    /// Constructorul gol (nu încarcă imaginea)
-    public LevelBackground() {
+    /// Constructorul
+    public LevelBackground(int levelNumber) {
+        try {
+            // Creează calea spre imagine dinamic
+            String path = String.format("/Background/Backgroundlevel%d.png", levelNumber);
+            image = ImageIO.read(getClass().getResource(path));
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            System.out.println("Nu s-a putut încărca fundalul pentru nivelul " + levelNumber);
+        }
     }
 
     /// Actualizează poziția fundalului în funcție de direcția de mișcare

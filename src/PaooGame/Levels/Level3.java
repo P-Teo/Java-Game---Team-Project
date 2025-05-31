@@ -1,7 +1,6 @@
 package PaooGame.Levels;
 
 
-import PaooGame.Graphics.LevelBackgroundFactory;
 import PaooGame.Object.Castle1;
 import PaooGame.Entity.Enemylvl3;
 import PaooGame.Entity.Player;
@@ -61,7 +60,7 @@ public class Level3 extends Level {
         loadAssets();
         player = new Player();
         score=0;  star=0;
-        background = LevelBackgroundFactory.createLevelBackground(3);
+        background = new LevelBackground(3);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
@@ -158,7 +157,7 @@ public class Level3 extends Level {
     public void reset() {
         startTime = System.currentTimeMillis();
         player = new Player();
-        background = LevelBackgroundFactory.createLevelBackground(3);
+        background = new LevelBackground(3);
         showMessage = true;
         levelCompleted = false;
         gameOver = false;
