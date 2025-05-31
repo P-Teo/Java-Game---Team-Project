@@ -174,6 +174,14 @@ public class Level5 extends Level {
         player.setHealth(500);
         player.speed = 8;
         starsFinal.clear();
+        int[][] positions = {
+                {850, 200}, {150, 300}, {500, 350}, {700, 250}, {250, 450},
+                {200, 200}, {800, 270}, {400, 450}, {150, 450}, {700, 450},
+                {300, 300}, {800, 430}, {400, 200}, {600, 380}, {500, 250}
+        };
+        for (int[] pos : positions) {
+            starsFinal.add(new StarFinal(pos[0], pos[1]));
+        }
     }
 
     /// funcție desenare scor și număr stele/bile rămase de colecționat
