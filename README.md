@@ -112,4 +112,3 @@ It’s organized into several packages:
 ## 🧾 *License*
 
 This project was created for **educational purposes**.  
-All visual and written resources belong to the respective authors.
